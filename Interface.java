@@ -79,7 +79,7 @@ public class Interface extends JFrame implements ActionListener {
             JOptionPane.showMessageDialog(this,s,"Alert",JOptionPane.WARNING_MESSAGE);
         }else if(e.getSource() == buttons[1][0]){
             this.dispose();
-            Parametres p = new Parametres();
+            Parametres p = new Parametres(10);
         }
     }
 }
