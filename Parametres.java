@@ -10,6 +10,9 @@ public class Parametres extends JFrame implements ActionListener {
     // Variables Composants
 
     private int SIZE;
+
+    private JPanel pan_main  = new JPanel();
+    private BorderLayout bl = new BorderLayout();
     private JPanel main_panel = new JPanel();
     private GridLayout gl_settings =  new GridLayout(5,3);
     private Integer[] choix_coord = {null,0,1,2,3,4,5,6,7,8,9};
@@ -38,7 +41,9 @@ public class Parametres extends JFrame implements ActionListener {
 
     private ArrayList<JComboBox> liste_combo = new ArrayList<>();
     private JButton valider = new JButton("Valider");
-    private JButton retour = new JButton("Retour");
+
+
+    //private JButton retour = new JButton("Retour");
 
 
     // Variables Controller
@@ -52,7 +57,12 @@ public class Parametres extends JFrame implements ActionListener {
         this.setSize(new Dimension(600,200));
         this.setDefaultCloseOperation(EXIT_ON_CLOSE);
         this.setTitle("Paramètres");
-        this.setContentPane(main_panel);
+        this.setLocationRelativeTo(null);
+        this.setContentPane(pan_main);
+        pan_main.setLayout(bl);
+        pan_main.add(main_panel, bl.CENTER);
+        pan_main.add(valider, bl.SOUTH);
+
 
         // Position des Composants dans un GridLayout
         this.main_panel.setBackground(Color.lightGray);
@@ -74,6 +84,8 @@ public class Parametres extends JFrame implements ActionListener {
         this.main_panel.add(LISTE_PION4_1);
         this.main_panel.add(LISTE_PION_AL4);
 
+
+
         liste_combo.add(LISTE_PION1);
         liste_combo.add(LISTE_PION2_1);
         liste_combo.add(LISTE_PION2);
@@ -82,6 +94,7 @@ public class Parametres extends JFrame implements ActionListener {
         liste_combo.add(LISTE_PION3_1);
         liste_combo.add(LISTE_PION4);
         liste_combo.add(LISTE_PION4_1);
+
 
 
         // Actions

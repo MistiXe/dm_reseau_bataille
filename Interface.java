@@ -10,7 +10,6 @@ import java.io.IOException;
 public class Interface extends JFrame implements ActionListener {
 
 
-
     private Image img;
     private BorderLayout bl =  new BorderLayout();
 
@@ -32,6 +31,7 @@ public class Interface extends JFrame implements ActionListener {
         this.setTitle("Bataille Navale");
         this.setDefaultCloseOperation(EXIT_ON_CLOSE);
         this.setSize(new Dimension(500, 500));
+        this.setLocationRelativeTo(null);
 
 
 
@@ -68,26 +68,11 @@ public class Interface extends JFrame implements ActionListener {
         pan.add(button2);
         this.add(pan);
 
-
-
-        
-
         // ActionListener
-
-
-
-        String path = "../dm_reseau_bataille/Media/bataille_navale.jpg";
-
-
        button1.addActionListener(this);
        button2.addActionListener(this);
 
-
-        this.setVisible(true);
-
-
-
-
+       this.setVisible(true);
 
     }
 
