@@ -4,43 +4,44 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.HashSet;
 
 
 public class Parametres extends JFrame implements ActionListener {
     // Variables Composants
 
-    private int SIZE;
+    private final int SIZE;
 
-    private JPanel pan_main  = new JPanel();
-    private BorderLayout bl = new BorderLayout();
-    private JPanel main_panel = new JPanel();
-    private GridLayout gl_settings =  new GridLayout(5,3);
-    private Integer[] choix_coord = {null,0,1,2,3,4,5,6,7,8,9};
-    private String[] statement  =  {"Horizontal", "Vertical"};
+    private final JPanel pan_main  = new JPanel();
+    private final BorderLayout bl = new BorderLayout();
+    private final JPanel main_panel = new JPanel();
+    private final GridLayout gl_settings =  new GridLayout(5,3);
+    private final Integer[] choix_coord = {null,0,1,2,3,4,5,6,7,8,9};
+    private final String[] statement  =  {"Horizontal", "Vertical"};
 
-    private JLabel nom_du_pion = new JLabel("Porte-Avion (5 Cases) : ");
-    private JLabel nom_du_pion2 = new JLabel("Croiseur (4 Cases) : ");
-    private JLabel nom_du_pion3 = new JLabel("Torpilleur (1 Case) : ");
-    private JLabel nom_du_pion4 = new JLabel("Sous-Marins (2 Cases) : ");
+    private final JLabel nom_du_pion = new JLabel("Porte-Avion (5 Cases) : ");
+    private final JLabel nom_du_pion2 = new JLabel("Croiseur (4 Cases) : ");
+    private final JLabel nom_du_pion3 = new JLabel("Torpilleur (1 Case) : ");
+    private final JLabel nom_du_pion4 = new JLabel("Sous-Marins (2 Cases) : ");
 
-    private JComboBox<Integer> LISTE_PION1 = new JComboBox<>(choix_coord);
-    private JComboBox<Integer> LISTE_PION2 = new JComboBox<>(choix_coord);
-    private JComboBox<Integer> LISTE_PION3 = new JComboBox<>(choix_coord);
-    private JComboBox<Integer> LISTE_PION4 = new JComboBox<>(choix_coord);
+    private final JComboBox<Integer> LISTE_PION1 = new JComboBox<>(choix_coord);
+    private final JComboBox<Integer> LISTE_PION2 = new JComboBox<>(choix_coord);
+    private final JComboBox<Integer> LISTE_PION3 = new JComboBox<>(choix_coord);
+    private final JComboBox<Integer> LISTE_PION4 = new JComboBox<>(choix_coord);
 
-    private JComboBox<Integer> LISTE_PION1_1 = new JComboBox<>(choix_coord);
-    private JComboBox<Integer> LISTE_PION2_1 = new JComboBox<>(choix_coord);
-    private JComboBox<Integer> LISTE_PION3_1 = new JComboBox<>(choix_coord);
-    private JComboBox<Integer> LISTE_PION4_1 = new JComboBox<>(choix_coord);
+    private final JComboBox<Integer> LISTE_PION1_1 = new JComboBox<>(choix_coord);
+    private final JComboBox<Integer> LISTE_PION2_1 = new JComboBox<>(choix_coord);
+    private final JComboBox<Integer> LISTE_PION3_1 = new JComboBox<>(choix_coord);
+    private final JComboBox<Integer> LISTE_PION4_1 = new JComboBox<>(choix_coord);
 
 
-    private JComboBox<String> LISTE_PION_AL1 = new JComboBox<>(statement);
-    private JComboBox<String> LISTE_PION_AL2 = new JComboBox<>(statement);
-    private JComboBox<String> LISTE_PION_AL3 = new JComboBox<>(statement);
-    private JComboBox<String> LISTE_PION_AL4 = new JComboBox<>(statement);
+    private final JComboBox<String> LISTE_PION_AL1 = new JComboBox<>(statement);
+    private final JComboBox<String> LISTE_PION_AL2 = new JComboBox<>(statement);
+    private final JComboBox<String> LISTE_PION_AL3 = new JComboBox<>(statement);
+    private final JComboBox<String> LISTE_PION_AL4 = new JComboBox<>(statement);
 
-    private ArrayList<JComboBox> liste_combo = new ArrayList<>();
-    private JButton valider = new JButton("Valider");
+    private final ArrayList<JComboBox> liste_combo = new ArrayList<>();
+    private final JButton valider = new JButton("Valider");
     
     private int cpt = 0;
 
@@ -63,8 +64,8 @@ public class Parametres extends JFrame implements ActionListener {
         this.setLocationRelativeTo(null);
         this.setContentPane(pan_main);
         pan_main.setLayout(bl);
-        pan_main.add(main_panel, bl.CENTER);
-        pan_main.add(valider, bl.SOUTH);
+        pan_main.add(main_panel, BorderLayout.CENTER);
+        pan_main.add(valider, BorderLayout.SOUTH);
 
 
         // Position des Composants dans un GridLayout
@@ -167,12 +168,20 @@ public class Parametres extends JFrame implements ActionListener {
            
            
 
-            System.out.println(coordinates);
+
             generateIndex(coordinates, 5, 0);
             generateIndex(coordinates, 4, 1);
             generateIndex(coordinates, 1, 2);
             generateIndex(coordinates, 2, 3);
-            System.out.println(coordinates);
+           if(estValide(coordinates)){
+               this.dispose();
+               Joueur1 j = new Joueur1(coordinates);
+
+           }else{
+               JOptionPane.showMessageDialog(null, "Erreur dans la saisie de données , veuillez réessayer. ", "Erreur", JOptionPane.ERROR_MESSAGE);
+               this.dispose();
+               new Parametres(10);
+           }
         }
 
         
@@ -203,17 +212,11 @@ public class Parametres extends JFrame implements ActionListener {
 
 
         public boolean estValide(ArrayList<ArrayList<Integer>> ar){
-            boolean flag = true;
+            HashSet<ArrayList<Integer>> H = new HashSet();
             for(ArrayList<Integer> ar_bis : ar){
-                for(ArrayList<Integer> ar_bis2 : ar){
-                    if(ar_bis == ar_bis2){
-                        flag = false;
-                    }
+                H.add(ar_bis);
             }
-            
-        }
-
-        return flag;
+            return H.size() == ar.size();
     }
 
         
