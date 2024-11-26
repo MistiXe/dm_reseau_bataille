@@ -41,6 +41,8 @@ public class Parametres extends JFrame implements ActionListener {
 
     private ArrayList<JComboBox> liste_combo = new ArrayList<>();
     private JButton valider = new JButton("Valider");
+    
+    private int cpt = 0;
 
 
     //private JButton retour = new JButton("Retour");
@@ -50,6 +52,7 @@ public class Parametres extends JFrame implements ActionListener {
 
     ArrayList<ArrayList<Integer>> tableau_de_zero = new ArrayList<>();
     ArrayList<ArrayList<Integer>> liste_coord = new ArrayList<>();
+    ArrayList<ArrayList<Integer>> liste_coord_final = new ArrayList<>();
 
     public Parametres(int taille){
         this.SIZE = taille;
@@ -87,7 +90,7 @@ public class Parametres extends JFrame implements ActionListener {
 
 
         liste_combo.add(LISTE_PION1);
-        liste_combo.add(LISTE_PION2_1);
+        liste_combo.add(LISTE_PION1_1);
         liste_combo.add(LISTE_PION2);
         liste_combo.add(LISTE_PION2_1);
         liste_combo.add(LISTE_PION3);
@@ -95,7 +98,8 @@ public class Parametres extends JFrame implements ActionListener {
         liste_combo.add(LISTE_PION4);
         liste_combo.add(LISTE_PION4_1);
 
-
+        valider.addActionListener(this);
+        valider.setEnabled(false);
 
         // Actions
 
@@ -104,11 +108,11 @@ public class Parametres extends JFrame implements ActionListener {
 
         }
 
-        genererGrilleVide();
-        System.out.println(tableau_de_zero);
+      
+        
     }
 
-    public ArrayList<Integer[]> genererGrilleVide(){
+    public ArrayList<ArrayList<Integer>> genererGrilleVide(){
         for (int i = 0; i < SIZE ; i++) {
             ArrayList<Integer> ligne_tableau = new ArrayList<>();
             for (int j = 0; j < SIZE; j++) {
@@ -116,14 +120,15 @@ public class Parametres extends JFrame implements ActionListener {
             }
             tableau_de_zero.add(ligne_tableau);
         }
-        return null;
+        return tableau_de_zero;
     }
 
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        ArrayList<int[]> coordinates = new ArrayList<>();
-        boolean allValuesSelected = true; // Vérifie si toutes les valeurs sont sélectionnées
+       
+        boolean allValuesSelected = true; 
+        ArrayList<ArrayList<Integer>> coordinates = new ArrayList<>();
 
         // Parcourir les JComboBox par paires pour former des couples (x, y)
         for (int i = 0; i < liste_combo.size(); i += 2) {
@@ -140,17 +145,79 @@ public class Parametres extends JFrame implements ActionListener {
             // Ajouter le couple (x, y) aux coordonnées
             int x = (int) xObj;
             int y = (int) yObj;
-            coordinates.add(new int[]{x, y});
+            ArrayList<Integer> sous_liste =  new ArrayList<>();
+            sous_liste.add(x);
+            sous_liste.add(y);
+            coordinates.add(sous_liste);
+            this.liste_combo.get(i).setEnabled(false);
+            this.liste_combo.get(i + 1).setEnabled(false);
+           
+            System.out.println(cpt);
+            if(cpt == 7){
+                valider.setEnabled(true);
+                
+            }
+           
+            
         }
 
+        cpt++;
 
+        if(e.getSource() == valider){
+           
+           
 
-        // Afficher les coordonnées
-        System.out.println("Coordonnées :");
-        for (int[] coordinate : coordinates) {
-            System.out.println("(" + coordinate[0] + ", " + coordinate[1] + ")");
+            System.out.println(coordinates);
+            generateIndex(coordinates, 5, 0);
+            generateIndex(coordinates, 4, 1);
+            generateIndex(coordinates, 1, 2);
+            generateIndex(coordinates, 2, 3);
+            System.out.println(coordinates);
         }
+
+        
+        
+        
+
+
+        
+ 
+    
     }
 
 
-}
+    public ArrayList<ArrayList<Integer>> generateIndex(ArrayList<ArrayList<Integer>> ar, int dupp, int indice){
+        for(int i = 0 ; i< ar.size(); i++){
+           if(i == indice){
+            for (int j = 1; j < dupp; j++) {
+                ArrayList<Integer> ar_ind = new ArrayList<>();
+                ar_ind.add(ar.get(i).get(0));
+                ar_ind.add(ar.get(i).get(1)+j);
+                ar.add(ar_ind);   
+            }
+           }
+         }
+
+         return ar;
+        }
+
+
+        public boolean estValide(ArrayList<ArrayList<Integer>> ar){
+            boolean flag = true;
+            for(ArrayList<Integer> ar_bis : ar){
+                for(ArrayList<Integer> ar_bis2 : ar){
+                    if(ar_bis == ar_bis2){
+                        flag = false;
+                    }
+            }
+            
+        }
+
+        return flag;
+    }
+
+        
+    }
+
+
+
