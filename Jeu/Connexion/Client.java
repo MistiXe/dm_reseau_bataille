@@ -2,34 +2,39 @@ package Jeu.Connexion;
 
 import java.io.*;
 import java.net.InetAddress;
+import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.HashMap;
 import java.util.Map;
+
+import static java.lang.System.out;
 
 public class Client {
 
     public Client(Map<String, Bateau> liste_j1) throws IOException, ClassNotFoundException {
 
-        String host = InetAddress.getLocalHost().getHostAddress();
-        int port = 666;
-        Socket socket = new Socket(host, port);
+        Socket socket = new Socket( InetAddress.getLocalHost().getHostAddress(), 12345);
         System.out.println("Connecté au serveur.");
-
-            // Flux pour échanger les tableaux
-        ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
-        ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
-
-            // Recevoir le tableau du serveur
-        Map<String, Bateau> ar = (Map) in.readObject();
-        System.out.println("Tableau reçu du client : " + ar);
-
-        // Envoyer le tableau du client
-        System.out.println("Envoi du tableau client : " + ar);
-        out.writeObject(ar);
-
-        // Mise à jour du tableau client
-        liste_j1 = ar;
+        PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
+        BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
 
+        int serverMapSize = Integer.parseInt(in.readLine()); // Taille de la HashMap serveur
+        Map<String, Bateau> receivedMap = new HashMap<>();
+        for (int i = 0; i < serverMapSize; i++) {
+            String key = in.readLine();              // Recevoir la clé
+            String bateauStr = in.readLine();        // Recevoir la valeur (toString)
+            receivedMap.put(key, Bateau.fromString(bateauStr)); // Reconstruire l'objet
+        }
+        System.out.println("HashMap reçu du serveur : " + receivedMap);
+
+        // Envoyer chaque entrée de la HashMap client
+        out.println(liste_j1.size()); // Envoyer la taille de la HashMap
+        for (Map.Entry<String, Bateau> entry : liste_j1.entrySet()) {
+            out.println(entry.getKey());         // Envoyer la clé
+            out.println(entry.getValue().toString()); // Envoyer la valeur
+        }
     }
+
+
 }
