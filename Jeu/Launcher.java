@@ -1,3 +1,5 @@
+package Jeu;
+
 import java.io.IOException;
 
 public class Launcher {

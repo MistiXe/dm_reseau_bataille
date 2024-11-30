@@ -1,10 +1,9 @@
-import javax.imageio.ImageIO;
+package Jeu;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
 
 public class Interface extends JFrame implements ActionListener {
@@ -41,7 +40,7 @@ public class Interface extends JFrame implements ActionListener {
            @Override
            protected void paintComponent(Graphics g) {
                super.paintComponent(g);
-               ImageIcon backgroundImage = new ImageIcon("../dm_reseau_bataille/Media/bn2.jpg");
+               ImageIcon backgroundImage = new ImageIcon("../dm_reseau_bataille/Jeu/Media/bn.jpg");
                g.drawImage(backgroundImage.getImage(), 0, 0, getWidth(), getHeight(), this);
            }
        };
@@ -93,6 +92,9 @@ public class Interface extends JFrame implements ActionListener {
             Parametres p = new Parametres(10);
         }
     }
+
+
+
 
 
 

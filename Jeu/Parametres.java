@@ -1,3 +1,11 @@
+package Jeu;
+
+
+
+import Jeu.Connexion.Bateau;
+import Jeu.Connexion.Client;
+import Jeu.Extra.Etat_Pion;
+
 import javax.swing.*;
 import java.awt.*;
 
@@ -190,10 +198,13 @@ public class Parametres extends JFrame implements ActionListener {
            if(estValide(coordinates)){
                this.dispose();
                try {
-                   Serveur j = new Serveur(dico_pion);
+                   Client c = new Client(dico_pion);
+                   Jeu j = new Jeu(dico_pion);
                } catch (UnknownHostException ex) {
                    throw new RuntimeException(ex);
                } catch (IOException ex) {
+                   throw new RuntimeException(ex);
+               } catch (ClassNotFoundException ex) {
                    throw new RuntimeException(ex);
                }
 

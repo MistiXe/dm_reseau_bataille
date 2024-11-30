@@ -1,19 +1,21 @@
+package Jeu;
+
+
+
+import Jeu.Connexion.Bateau;
+import Jeu.Extra.Timer3min;
+
 import javax.swing.*;
 import java.awt.*;
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
 import java.net.InetAddress;
-import java.net.ServerSocket;
-import java.net.Socket;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
 import static javax.swing.SwingConstants.CENTER;
 
-public class Serveur extends JFrame {
+public class Jeu extends JFrame {
 
     private JButton[][] boutons = new JButton[10][10];
     private Map<String , Bateau> dico_b = new HashMap<>();
@@ -28,7 +30,7 @@ public class Serveur extends JFrame {
 
 
 
-    public Serveur(Map<String, Bateau> dico) throws IOException {
+    public Jeu(Map<String, Bateau> dico) throws IOException {
         this.dico_b =dico;
         afficherDico(dico_b);
         this.setTitle("Partie Joueur");
@@ -40,13 +42,6 @@ public class Serveur extends JFrame {
         int colonnes = 10;
         System.out.println(dico);
         JPanel gridPanel = new JPanel(new GridLayout(lignes, colonnes));
-
-        ServerSocket serveurSocket = new ServerSocket(12345);
-        System.out.println("Serveur démarré, en attente de connexion sur le port 12345...");
-        Socket socket = serveurSocket.accept();
-        System.out.println("Client connecté : " + socket.getInetAddress());
-        
-
 
         for (int i = 0; i < lignes; i++) {
             for (int j = 0; j < colonnes; j++) {
