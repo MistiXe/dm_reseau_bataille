@@ -3,8 +3,8 @@ import java.awt.*;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.ArrayList;
-import java.util.HashSet;
+import java.net.UnknownHostException;
+import java.util.*;
 
 
 public class Parametres extends JFrame implements ActionListener {
@@ -41,19 +41,16 @@ public class Parametres extends JFrame implements ActionListener {
     private final JComboBox<String> LISTE_PION_AL4 = new JComboBox<>(statement);
 
     private final ArrayList<JComboBox> liste_combo = new ArrayList<>();
+    private final ArrayList<Etat_Pion> liste_etat = new ArrayList<>();
+    private final ArrayList<JComboBox> liste_combo_etat = new ArrayList<>();
     private final JButton valider = new JButton("Valider");
     
     private int cpt = 0;
 
 
-    //private JButton retour = new JButton("Retour");
-
-
-    // Variables Controller
-
     ArrayList<ArrayList<Integer>> tableau_de_zero = new ArrayList<>();
-    ArrayList<ArrayList<Integer>> liste_coord = new ArrayList<>();
-    ArrayList<ArrayList<Integer>> liste_coord_final = new ArrayList<>();
+
+    Map<String, Bateau> dico_pion = new HashMap<>();
 
     public Parametres(int taille){
         this.SIZE = taille;
@@ -99,6 +96,11 @@ public class Parametres extends JFrame implements ActionListener {
         liste_combo.add(LISTE_PION4);
         liste_combo.add(LISTE_PION4_1);
 
+        liste_combo_etat.add(LISTE_PION_AL1);
+        liste_combo_etat.add(LISTE_PION_AL2);
+        liste_combo_etat.add(LISTE_PION_AL3);
+        liste_combo_etat.add(LISTE_PION_AL4);
+
         valider.addActionListener(this);
         valider.setEnabled(false);
 
@@ -108,6 +110,19 @@ public class Parametres extends JFrame implements ActionListener {
             liste_combo.get(i).addActionListener(this);
 
         }
+
+        for (int i = 0; i < liste_combo_etat.size(); i++) {
+            liste_combo_etat.get(i).addActionListener(this);
+
+        }
+
+
+
+
+
+
+
+
 
       
         
@@ -152,62 +167,103 @@ public class Parametres extends JFrame implements ActionListener {
             coordinates.add(sous_liste);
             this.liste_combo.get(i).setEnabled(false);
             this.liste_combo.get(i + 1).setEnabled(false);
-           
-            System.out.println(cpt);
-            if(cpt == 7){
+
+            if(cpt == 8){
                 valider.setEnabled(true);
                 
             }
-           
-            
+
+            cpt++;
         }
 
-        cpt++;
+
 
         if(e.getSource() == valider){
-           
-           
+            for (int i = 0; i < coordinates.size() ; i++) {
+                switch (i){
+                    case 0:
+                        Bateau b = new Bateau();
+                        b.addState(liste_etat.get(0).toString());
+                        b.addCoordinate(generateIndex(coordinates.get(i), 5 , liste_etat.get(0)));
+                        dico_pion.put("Bateau à 5 cases", b);
+                    case 1:
+                        Bateau b1 = new Bateau();
+                        b1.addState(liste_etat.get(1).toString());
+                        b1.addCoordinate(generateIndex(coordinates.get(i), 4 , liste_etat.get(1)));
+                        dico_pion.put("Bateau à 4 cases : ", b1);
+                    case 2:
+                        Bateau b2 = new Bateau();
+                        b2.addState(liste_etat.get(2).toString());
+                        b2.addCoordinate(generateIndex(coordinates.get(i), 2 , liste_etat.get(2)));
+                        dico_pion.put("Bateau à 2 cases : ", b2);
+                    case 3:
+                        Bateau b3 = new Bateau();
+                        b3.addState(liste_etat.get(3).toString());
+                        b3.addCoordinate(generateIndex(coordinates.get(i), 1, liste_etat.get(3)));
+                        dico_pion.put("Bateau à 1 cases : ", b3);
+
+                }
+
+           }
 
 
-            generateIndex(coordinates, 5, 0);
-            generateIndex(coordinates, 4, 1);
-            generateIndex(coordinates, 1, 2);
-            generateIndex(coordinates, 2, 3);
+
            if(estValide(coordinates)){
                this.dispose();
-               Joueur1 j = new Joueur1(coordinates);
+               try {
+                   Player j = new Player(dico_pion);
+               } catch (UnknownHostException ex) {
+                   throw new RuntimeException(ex);
+               }
 
            }else{
                JOptionPane.showMessageDialog(null, "Erreur dans la saisie de données , veuillez réessayer. ", "Erreur", JOptionPane.ERROR_MESSAGE);
                this.dispose();
                new Parametres(10);
            }
+
+
+
+           }
+
+
+        for(JComboBox cbe : liste_combo_etat){
+
+            if(e.getSource() == cbe){
+                cbe.setEnabled(false);
+                if(cbe.getSelectedItem().toString().toUpperCase().equals("HORIZONTAL")){
+                    liste_etat.add(Etat_Pion.HORIZONTAL);
+
+                }else{
+                    liste_etat.add(Etat_Pion.VERTICAL);
+
+                }
+            }
+
+        }
         }
 
-        
-        
-        
 
 
-        
- 
-    
-    }
 
+    public ArrayList<ArrayList<Integer>> generateIndex(ArrayList<Integer> integ, int dupp, Etat_Pion e){
+        ArrayList<ArrayList<Integer>> liste_genere = new ArrayList<>();
 
-    public ArrayList<ArrayList<Integer>> generateIndex(ArrayList<ArrayList<Integer>> ar, int dupp, int indice){
-        for(int i = 0 ; i< ar.size(); i++){
-           if(i == indice){
-            for (int j = 1; j < dupp; j++) {
-                ArrayList<Integer> ar_ind = new ArrayList<>();
-                ar_ind.add(ar.get(i).get(0));
-                ar_ind.add(ar.get(i).get(1)+j);
-                ar.add(ar_ind);   
+        for(int i = 0 ; i< dupp; i++){
+            if(e.equals(Etat_Pion.HORIZONTAL)){
+                ArrayList<Integer> sous_liste =  new ArrayList<>(integ);
+                integ.set(0, integ.get(0)+1);
+                liste_genere.add(sous_liste);
+
+            }else{
+                ArrayList<Integer> sous_liste =  new ArrayList<>(integ);
+                integ.set(1, integ.get(1)+1);
+                liste_genere.add(sous_liste);
             }
-           }
+
          }
 
-         return ar;
+         return liste_genere;
         }
 
 
