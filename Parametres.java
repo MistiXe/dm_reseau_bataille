@@ -3,6 +3,7 @@ import java.awt.*;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
 import java.net.UnknownHostException;
 import java.util.*;
 
@@ -115,28 +116,7 @@ public class Parametres extends JFrame implements ActionListener {
             liste_combo_etat.get(i).addActionListener(this);
 
         }
-
-
-
-
-
-
-
-
-
-      
         
-    }
-
-    public ArrayList<ArrayList<Integer>> genererGrilleVide(){
-        for (int i = 0; i < SIZE ; i++) {
-            ArrayList<Integer> ligne_tableau = new ArrayList<>();
-            for (int j = 0; j < SIZE; j++) {
-                ligne_tableau.add(0);
-            }
-            tableau_de_zero.add(ligne_tableau);
-        }
-        return tableau_de_zero;
     }
 
 
@@ -157,7 +137,6 @@ public class Parametres extends JFrame implements ActionListener {
                 allValuesSelected = false; // Marque qu'une sélection est manquante
                 break;
             }
-
             // Ajouter le couple (x, y) aux coordonnées
             int x = (int) xObj;
             int y = (int) yObj;
@@ -206,13 +185,15 @@ public class Parametres extends JFrame implements ActionListener {
 
            }
 
-
+            // ZONE A EDITER
 
            if(estValide(coordinates)){
                this.dispose();
                try {
-                   Player j = new Player(dico_pion);
+                   Serveur j = new Serveur(dico_pion);
                } catch (UnknownHostException ex) {
+                   throw new RuntimeException(ex);
+               } catch (IOException ex) {
                    throw new RuntimeException(ex);
                }
 
@@ -260,7 +241,6 @@ public class Parametres extends JFrame implements ActionListener {
                 integ.set(1, integ.get(1)+1);
                 liste_genere.add(sous_liste);
             }
-
          }
 
          return liste_genere;
