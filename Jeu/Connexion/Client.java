@@ -8,8 +8,11 @@ import java.util.Map;
 
 public class Client {
 
-    public Client(Map<String, Bateau> liste_j1) throws IOException, ClassNotFoundException {
+    Map<String, Bateau> ar_envoye = new HashMap<>();
 
+
+    public Client(Map<String, Bateau> liste_j1) throws IOException, ClassNotFoundException {
+        this.ar_envoye = liste_j1;
         Socket socket = new Socket( InetAddress.getLocalHost().getHostAddress(), 12345);
         System.out.println("Connecté au serveur.");
         PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
@@ -33,5 +36,10 @@ public class Client {
         }
 
 
+    }
+
+
+    public Map<String, Bateau> getAr_envoye() {
+        return ar_envoye;
     }
 }

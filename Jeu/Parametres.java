@@ -200,7 +200,7 @@ public class Parametres extends JFrame implements ActionListener {
                this.dispose();
                try {
                    Client c = new Client(dico_pion);
-                   Jeu j = new Jeu(dico_pion);
+                   Jeu j = new Jeu(c.getAr_envoye());
                } catch (UnknownHostException ex) {
                    throw new RuntimeException(ex);
                } catch (IOException ex) {

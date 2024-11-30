@@ -42,29 +42,6 @@ public class Serveur {
 
    }
 
-    // Convertir HashMap<String, Bateau> en une chaîne
-    private static String mapToString(Map<String, Bateau> map) {
-        StringBuilder sb = new StringBuilder();
-        for (String key : map.keySet()) {
-            sb.append(key).append("=").append(map.get(key).toString()).append(";");
-        }
-        return sb.toString();
-    }
-
-    // Convertir une chaîne en HashMap<String, Bateau>
-    private static Map<String, Bateau> stringToMap(String str) {
-        Map<String, Bateau> map = new HashMap<>();
-        String[] pairs = str.split(";");
-        for (String pair : pairs) {
-            if (!pair.isEmpty()) {
-                String[] keyValue = pair.split("=");
-                if (keyValue.length == 2) {
-                    map.put(keyValue[0], Bateau.fromString(keyValue[1]));
-                }
-            }
-        }
-        return map;
-    }
 
 
 
