@@ -4,6 +4,7 @@ package Jeu;
 
 import Jeu.Connexion.Bateau;
 import Jeu.Connexion.Client;
+import Jeu.Connexion.Serveur;
 import Jeu.Extra.Etat_Pion;
 
 import javax.swing.*;
@@ -198,7 +199,7 @@ public class Parametres extends JFrame implements ActionListener {
            if(estValide(coordinates)){
                this.dispose();
                try {
-                   Client c = new Client(dico_pion);
+                   Serveur s = new Serveur(dico_pion);
                    Jeu j = new Jeu(dico_pion);
                } catch (UnknownHostException ex) {
                    throw new RuntimeException(ex);
