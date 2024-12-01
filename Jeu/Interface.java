@@ -1,5 +1,9 @@
 package Jeu;
 
+import Jeu.Extra.Son;
+
+import javax.sound.sampled.LineUnavailableException;
+import javax.sound.sampled.UnsupportedAudioFileException;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -10,20 +14,17 @@ public class Interface extends JFrame implements ActionListener {
 
 
     private Image img;
-    private BorderLayout bl =  new BorderLayout();
-
-    private JLabel lab_titre  = new JLabel("La bataille navale");
-
+    private Son s;
+    private JLabel lab_titre = new JLabel("La bataille navale");
     private int size = 2;
     private int size2 = 1;
-    private GridLayout gl = new GridLayout(size,size2);
-    private GridBagConstraints gbl =  new GridBagConstraints();
+    private GridLayout gl = new GridLayout(size, size2);
+    private GridBagConstraints gbl = new GridBagConstraints();
     private JButton button1 = new JButton("Lancer une nouvelle partie");
     private JButton button2 = new JButton("Règles du Jeu");
 
 
-
-    public Interface() throws IOException {
+    public Interface() throws IOException, UnsupportedAudioFileException, LineUnavailableException {
 
 
         // Création de la fenêtre
@@ -33,30 +34,29 @@ public class Interface extends JFrame implements ActionListener {
         this.setLocationRelativeTo(null);
 
 
-
         // Pannel / BorderLayout
 
-       JPanel pan = new JPanel(){
-           @Override
-           protected void paintComponent(Graphics g) {
-               super.paintComponent(g);
-               ImageIcon backgroundImage = new ImageIcon("../dm_reseau_bataille/Jeu/Media/bn.jpg");
-               g.drawImage(backgroundImage.getImage(), 0, 0, getWidth(), getHeight(), this);
-           }
-       };
+        JPanel pan = new JPanel() {
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                ImageIcon backgroundImage = new ImageIcon("../dm_reseau_bataille/Jeu/Media/bn2.jpg");
+                g.drawImage(backgroundImage.getImage(), 0, 0, getWidth(), getHeight(), this);
+            }
+        };
 
-       pan.setLayout(new BoxLayout(pan, BoxLayout.Y_AXIS));
+        pan.setLayout(new BoxLayout(pan, BoxLayout.Y_AXIS));
 
-       button1.setAlignmentX(Component.CENTER_ALIGNMENT);
-       button1.setBackground(Color.lightGray);
-       button2.setBackground(Color.lightGray);
-       button1.setFont(new Font("Calibri", Font.ITALIC, 20));
-       button2.setFont(new Font("Calibri", Font.ITALIC, 20));
+        button1.setAlignmentX(Component.CENTER_ALIGNMENT);
+        button1.setBackground(Color.lightGray);
+        button2.setBackground(Color.lightGray);
+        button1.setFont(new Font("Calibri", Font.ITALIC, 20));
+        button2.setFont(new Font("Calibri", Font.ITALIC, 20));
 
-       button2.setAlignmentX(Component.CENTER_ALIGNMENT);
-       lab_titre.setAlignmentX(Component.CENTER_ALIGNMENT);
-       lab_titre.setForeground(Color.WHITE);
-       lab_titre.setFont(new Font("Calibri", Font.PLAIN, 60));
+        button2.setAlignmentX(Component.CENTER_ALIGNMENT);
+        lab_titre.setAlignmentX(Component.CENTER_ALIGNMENT);
+        lab_titre.setForeground(Color.WHITE);
+        lab_titre.setFont(new Font("Calibri", Font.PLAIN, 60));
 
         // Ajouter les boutons au panneau
         pan.add(Box.createRigidArea(new Dimension(0, 40)));
@@ -68,34 +68,44 @@ public class Interface extends JFrame implements ActionListener {
         this.add(pan);
 
         // ActionListener
-       button1.addActionListener(this);
-       button2.addActionListener(this);
+        button1.addActionListener(this);
+        button2.addActionListener(this);
 
-       this.setVisible(true);
+        this.setVisible(true);
+
+        // Gestion du son
+
+        s = new Son("../dm_reseau_bataille/Jeu/Media/ritmada.wav");
+        s.loop();
+
+
 
     }
-
-
 
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        if(e.getSource() == button2){
-            String s  = "La bataille navale est un jeu de stratégie pour deux joueurs. \n" +
+        if (e.getSource() == button2) {
+            String s = "La bataille navale est un jeu de stratégie pour deux joueurs. \n" +
                     "Chaque joueur dispose une flotte de navires sur une grille cachée de son adversaire. \n" +
                     "Le but est de deviner la position des navires ennemis en annonçant des coordonnées. \n" +
                     "Chaque tir peut être \"à l’eau\", \"touché\", ou \"coulé\", selon l’impact sur les navires adverses. \n" +
                     "Le vainqueur est le premier à couler tous les navires de l’adversaire.";
-            JOptionPane.showMessageDialog(this,s,"Alert",JOptionPane.WARNING_MESSAGE);
-        }else if(e.getSource() == button1){
+            JOptionPane.showMessageDialog(this, s, "Alert", JOptionPane.WARNING_MESSAGE);
+        } else if (e.getSource() == button1) {
+            try {
+                s.close();
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
             this.dispose();
-            Parametres p = new Parametres(10);
+            try {
+                Parametres p = new Parametres(10);
+            } catch (Exception ex) {
+                throw new RuntimeException(ex);
+            }
         }
     }
-
-
-
-
 
 
 }
