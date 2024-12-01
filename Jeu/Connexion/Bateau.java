@@ -12,6 +12,38 @@ public class Bateau {
         this.etat = new ArrayList<>();
     }
 
+    // Méthode pour reconstruire un objet Bateau à partir d'une chaîne
+    public static Bateau fromString(String str) {
+        Bateau bateau = new Bateau();
+
+        String[] parts = str.split("etat="); // Séparer les coordonnées des états
+        if (parts.length != 2) return null; // Format invalide
+
+        // Traiter les coordonnées
+        String coordPart = parts[0].replace("coord=", "").trim();
+        String[] coordGroups = coordPart.split(";");
+        for (String group : coordGroups) {
+            if (group.isEmpty()) continue;
+
+            group = group.replace("[", "").replace("]", ""); // Retirer les crochets
+            String[] numbers = group.split(",");
+            ArrayList<Integer> subList = new ArrayList<>();
+            for (String num : numbers) {
+                subList.add(Integer.parseInt(num.trim()));
+            }
+            bateau.coord.add(subList);
+        }
+
+        // Traiter les états
+        String etatPart = parts[1].trim();
+        String[] states = etatPart.split(",");
+        for (String state : states) {
+            bateau.etat.add(state.trim());
+        }
+
+        return bateau;
+    }
+
     // Ajouter une coordonnée
     public void addCoordinate(ArrayList<ArrayList<Integer>> a_i) {
         coord = a_i;
@@ -57,37 +89,5 @@ public class Bateau {
         }
 
         return sb.toString();
-    }
-
-    // Méthode pour reconstruire un objet Bateau à partir d'une chaîne
-    public static Bateau fromString(String str) {
-        Bateau bateau = new Bateau();
-
-        String[] parts = str.split("etat="); // Séparer les coordonnées des états
-        if (parts.length != 2) return null; // Format invalide
-
-        // Traiter les coordonnées
-        String coordPart = parts[0].replace("coord=", "").trim();
-        String[] coordGroups = coordPart.split(";");
-        for (String group : coordGroups) {
-            if (group.isEmpty()) continue;
-
-            group = group.replace("[", "").replace("]", ""); // Retirer les crochets
-            String[] numbers = group.split(",");
-            ArrayList<Integer> subList = new ArrayList<>();
-            for (String num : numbers) {
-                subList.add(Integer.parseInt(num.trim()));
-            }
-            bateau.coord.add(subList);
-        }
-
-        // Traiter les états
-        String etatPart = parts[1].trim();
-        String[] states = etatPart.split(",");
-        for (String state : states) {
-            bateau.etat.add(state.trim());
-        }
-
-        return bateau;
     }
 }
