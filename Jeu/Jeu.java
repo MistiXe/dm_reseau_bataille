@@ -2,6 +2,7 @@ package Jeu;
 
 
 import Jeu.Connexion.Bateau;
+import Jeu.Connexion.Serveur;
 import Jeu.Extra.Son;
 import Jeu.Extra.Timer3min;
 
@@ -32,8 +33,9 @@ public class Jeu extends JFrame {
     private JLabel score = new JLabel("Score : " + points);
 
 
-    public Jeu(Map<String, Bateau> dico) throws IOException, UnsupportedAudioFileException, LineUnavailableException {
-        this.dico_b = dico;
+    public Jeu(Map<String, Bateau> dico) throws IOException, UnsupportedAudioFileException, LineUnavailableException, ClassNotFoundException {
+        Serveur serv = new Serveur(dico);
+        this.dico_b = serv.getRecu();
         this.setTitle("Partie Joueur");
         this.setSize(550, 500);
         this.setDefaultCloseOperation(EXIT_ON_CLOSE);

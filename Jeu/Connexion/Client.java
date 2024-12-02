@@ -31,6 +31,7 @@ public class Client {
         }
         System.out.println("HashMap reçu du serveur : " + receivedMap);
 
+
         // Envoyer chaque entrée de la HashMap client
         out.println(liste_j1.size()); // Envoyer la taille de la HashMap
         for (Map.Entry<String, Bateau> entry : liste_j1.entrySet()) {

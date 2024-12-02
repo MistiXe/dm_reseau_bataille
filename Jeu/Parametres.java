@@ -2,6 +2,7 @@ package Jeu;
 
 
 import Jeu.Connexion.Bateau;
+import Jeu.Connexion.Serveur;
 import Jeu.Extra.Etat_Pion;
 import Jeu.Extra.Son;
 
@@ -55,7 +56,7 @@ public class Parametres extends JFrame implements ActionListener {
     Map<String, Bateau> dico_pion = new HashMap<>();
     private ArrayList<ArrayList<Integer>> coordinates;
     private JPanel apercu;
-    private Son s;
+    private final Son s;
 
     public Parametres(int taille) throws UnsupportedAudioFileException, LineUnavailableException, IOException {
         this.SIZE = taille;
@@ -72,8 +73,6 @@ public class Parametres extends JFrame implements ActionListener {
         pan_main.add(panel_sud, BorderLayout.SOUTH);
         panel_sud.setLayout(gl_s);
         panel_sud.add(valider);
-
-        // Position des Composants dans un GridLayout
         this.main_panel.setBackground(Color.lightGray);
         this.main_panel.setLayout(gl_settings);
         this.main_panel.add(type);
@@ -163,6 +162,8 @@ public class Parametres extends JFrame implements ActionListener {
                 throw new RuntimeException(ex);
             } catch (LineUnavailableException ex) {
                 throw new RuntimeException(ex);
+            } catch (ClassNotFoundException ex) {
+                throw new RuntimeException(ex);
             }
         }
 
@@ -194,7 +195,6 @@ public class Parametres extends JFrame implements ActionListener {
         if (e.getSource() == valider) {
 
             ArrayList<ArrayList<Integer>> indice_sougline = new ArrayList<>();
-            ;
 
 
             for (int i = 0; i < coordinates.size(); i++) {

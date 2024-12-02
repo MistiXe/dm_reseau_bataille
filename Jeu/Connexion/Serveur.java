@@ -12,6 +12,8 @@ import java.util.Map;
 
 public class Serveur {
 
+    Map<String, Bateau> recu = new HashMap<>();
+
     public Serveur(Map<String, Bateau> liste_j1) throws IOException, ClassNotFoundException {
         ServerSocket serveurSocket = new ServerSocket(12345);
         System.out.println("En attente de connexion...");
@@ -36,10 +38,13 @@ public class Serveur {
         }
 
         System.out.println("HashMap reçu du client : " + receivedMap);
+        recu = receivedMap;
 
 
     }
 
-    
+    public Map<String, Bateau> getRecu() {
+        return recu;
+    }
 }
 
