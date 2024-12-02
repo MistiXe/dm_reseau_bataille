@@ -15,6 +15,7 @@ public class Client {
 
 
     public Client(Map<String, Bateau> liste_j1) throws IOException, ClassNotFoundException {
+
         this.ar_envoye = liste_j1;
         Socket socket = new Socket(InetAddress.getLocalHost().getHostAddress(), 12345);
         System.out.println("Connecté au serveur.");
