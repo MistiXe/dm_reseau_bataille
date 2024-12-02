@@ -12,7 +12,6 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -25,9 +24,12 @@ public class Parametres extends JFrame implements ActionListener {
     private final int SIZE;
     private final JPanel pan_main = new JPanel();
     private final BorderLayout bl = new BorderLayout();
+    private final GridLayout gl_s = new GridLayout(1, 1);
     private final JPanel main_panel = new JPanel();
+    private final JPanel panel_sud = new JPanel();
+    private final GridLayout apercu_bis = new GridLayout(10, 10);
     private final GridLayout gl_settings = new GridLayout(6, 2);
-    private final String[] statement = {null,"Horizontal", "Vertical"};
+    private final String[] statement = {null, "Horizontal", "Vertical"};
     private final JLabel nom_du_pion = new JLabel("Porte-Avion (5 Cases) : ");
     private final JLabel type = new JLabel("Type de bateau");
     private final JLabel type_de_X = new JLabel("Coordonnées :");
@@ -35,10 +37,10 @@ public class Parametres extends JFrame implements ActionListener {
     private final JLabel nom_du_pion2 = new JLabel("Croiseur (4 Cases) : ");
     private final JLabel nom_du_pion3 = new JLabel("Torpilleur (1 Case) : ");
     private final JLabel nom_du_pion4 = new JLabel("Sous-Marins (2 Cases) : ");
-    private final JComboBox<String> LISTE_PION1 = new JComboBox<>( generateCoordinates());
-    private final JComboBox<String> LISTE_PION2 = new JComboBox<>( generateCoordinates());
-    private final JComboBox<String> LISTE_PION3 = new JComboBox<>( generateCoordinates());
-    private final JComboBox<String> LISTE_PION4 = new JComboBox<>( generateCoordinates());
+    private final JComboBox<String> LISTE_PION1 = new JComboBox<>(generateCoordinates());
+    private final JComboBox<String> LISTE_PION2 = new JComboBox<>(generateCoordinates());
+    private final JComboBox<String> LISTE_PION3 = new JComboBox<>(generateCoordinates());
+    private final JComboBox<String> LISTE_PION4 = new JComboBox<>(generateCoordinates());
     private final JComboBox<String> LISTE_PION_AL1 = new JComboBox<>(statement);
     private final JComboBox<String> LISTE_PION_AL2 = new JComboBox<>(statement);
     private final JComboBox<String> LISTE_PION_AL3 = new JComboBox<>(statement);
@@ -47,15 +49,18 @@ public class Parametres extends JFrame implements ActionListener {
     private final ArrayList<Etat_Pion> liste_etat = new ArrayList<>();
     private final ArrayList<JComboBox> liste_combo_etat = new ArrayList<>();
     private final JButton valider = new JButton("Valider");
+    private final JButton confirmer = new JButton("Confirmer");
     private final int cpt = 0;
     ArrayList<ArrayList<Integer>> tableau_de_zero = new ArrayList<>();
     Map<String, Bateau> dico_pion = new HashMap<>();
+    private ArrayList<ArrayList<Integer>> coordinates;
+    private JPanel apercu;
     private Son s;
 
     public Parametres(int taille) throws UnsupportedAudioFileException, LineUnavailableException, IOException {
         this.SIZE = taille;
         this.setVisible(true);
-        this.setSize(new Dimension(600, 200));
+        this.setSize(new Dimension(600, 215));
         this.setDefaultCloseOperation(EXIT_ON_CLOSE);
         this.setTitle("Paramètres");
         this.setLocationRelativeTo(null);
@@ -64,8 +69,9 @@ public class Parametres extends JFrame implements ActionListener {
         s.loop();
         pan_main.setLayout(bl);
         pan_main.add(main_panel, BorderLayout.CENTER);
-        pan_main.add(valider, BorderLayout.SOUTH);
-
+        pan_main.add(panel_sud, BorderLayout.SOUTH);
+        panel_sud.setLayout(gl_s);
+        panel_sud.add(valider);
 
         // Position des Composants dans un GridLayout
         this.main_panel.setBackground(Color.lightGray);
@@ -86,40 +92,30 @@ public class Parametres extends JFrame implements ActionListener {
         this.main_panel.add(LISTE_PION4);
         this.main_panel.add(LISTE_PION_AL4);
         System.out.println(new ArrayList<>(Arrays.asList(generateCoordinates())));
-
-
-
         liste_combo.add(LISTE_PION1);
         liste_combo.add(LISTE_PION2);
         liste_combo.add(LISTE_PION3);
         liste_combo.add(LISTE_PION4);
-
         liste_combo_etat.add(LISTE_PION_AL1);
         liste_combo_etat.add(LISTE_PION_AL2);
         liste_combo_etat.add(LISTE_PION_AL3);
         liste_combo_etat.add(LISTE_PION_AL4);
-
         valider.addActionListener(this);
+        confirmer.addActionListener(this);
         valider.setEnabled(false);
-
         // Actions
-
         for (int i = 0; i < liste_combo.size(); i++) {
             liste_combo.get(i).addActionListener(this);
 
         }
-
         for (int i = 0; i < liste_combo_etat.size(); i++) {
             liste_combo_etat.get(i).addActionListener(this);
 
         }
-
     }
 
     public static boolean testComboDescative(ArrayList<JComboBox> liste_de_combo_indice) {
-
         boolean combo_indice = true;
-
         for (JComboBox cb : liste_de_combo_indice) {
             if (cb.isEnabled()) {
                 combo_indice = false;
@@ -142,14 +138,39 @@ public class Parametres extends JFrame implements ActionListener {
         return combo_etat;
     }
 
+    public static String[] generateCoordinates() {
+        String[] coordinates = new String[10 * 10 + 1];
+        int index = 1;
+        coordinates[0] = null;
+        for (int i = 0; i < 10; i++) {
+            char letter = (char) ('A' + i);
+            for (int j = 0; j < 10; j++) {
+                coordinates[index++] = letter + String.valueOf(j);
+            }
+        }
+        return coordinates;
+    }
+
     @Override
     public void actionPerformed(ActionEvent e) {
 
+        if (e.getSource() == confirmer) {
+            try {
+                Jeu jeu = new Jeu(dico_pion);
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            } catch (UnsupportedAudioFileException ex) {
+                throw new RuntimeException(ex);
+            } catch (LineUnavailableException ex) {
+                throw new RuntimeException(ex);
+            }
+        }
+
         boolean allValuesSelected = true;
-        ArrayList<ArrayList<Integer>> coordinates = new ArrayList<>();
+        coordinates = new ArrayList<>();
 
         // Parcourir les JComboBox par paires pour former des couples (x, y)
-        for (int i = 0; i < liste_combo.size(); i ++) {
+        for (int i = 0; i < liste_combo.size(); i++) {
             // Récupérer les éléments sélectionnés dans chaque JComboBox
             Object Obj = liste_combo.get(i).getSelectedItem();
             if (Obj == null) {
@@ -164,15 +185,18 @@ public class Parametres extends JFrame implements ActionListener {
             ArrayList<Integer> sous_liste = new ArrayList<>();
             sous_liste.add(x);
             sous_liste.add(y);
-            System.out.println(sous_liste);
             coordinates.add(sous_liste);
             this.liste_combo.get(i).setEnabled(false);
-
 
         }
 
 
         if (e.getSource() == valider) {
+
+            ArrayList<ArrayList<Integer>> indice_sougline = new ArrayList<>();
+            ;
+
+
             for (int i = 0; i < coordinates.size(); i++) {
                 switch (i) {
                     case 0:
@@ -180,11 +204,13 @@ public class Parametres extends JFrame implements ActionListener {
                         b.addState(liste_etat.get(0).toString());
                         b.addCoordinate(generateIndex(coordinates.get(i), 5, liste_etat.get(0)));
                         dico_pion.put("Bateau à 5 cases", b);
+
                     case 1:
                         Bateau b1 = new Bateau();
                         b1.addState(liste_etat.get(1).toString());
                         b1.addCoordinate(generateIndex(coordinates.get(i), 4, liste_etat.get(1)));
                         dico_pion.put("Bateau à 4 cases : ", b1);
+
                     case 2:
                         Bateau b2 = new Bateau();
                         b2.addState(liste_etat.get(2).toString());
@@ -198,33 +224,51 @@ public class Parametres extends JFrame implements ActionListener {
 
                 }
 
+
             }
 
-            // ZONE A EDITER
+            for (Map.Entry<String, Bateau> m : dico_pion.entrySet()) {
+                for (ArrayList ar : m.getValue().getCoordinates()) {
+                    indice_sougline.add(ar);
+                }
+            }
 
+            apercu = new JPanel() {
+
+                @Override
+                protected void paintComponent(Graphics g) {
+                    super.paintComponent(g);
+                    for (int i = 0; i < 10; i++) {
+                        for (int j = 0; j < 10; j++) {
+                            ArrayList<Integer> indice = new ArrayList<>();
+                            indice.add(i);
+                            indice.add(j);
+                            if (indice_sougline.contains(indice)) {
+                                g.setColor(Color.RED); // Sinon, la case est blanche
+                            } else {
+                                g.setColor(Color.WHITE);
+                            }
+
+                            g.fillRect(j * 15, i * 15, 15, 15);
+                            g.setColor(Color.BLACK);
+                            g.drawRect(j * 15, i * 15, 15, 15);
+                        }
+
+                    }
+                }
+            };
+            apercu.setPreferredSize(new Dimension(150, 215));
+            pan_main.add(apercu, BorderLayout.EAST);
             if (estValide(dico_pion)) {
                 try {
                     s.close();
                 } catch (IOException ex) {
                     throw new RuntimeException(ex);
                 }
-                this.dispose();
-                try {
-                    //Client c = new Client(dico_pion);
-                    Jeu j = new Jeu(dico_pion);
-
-
-                } catch (UnknownHostException ex) {
-                    throw new RuntimeException(ex);
-                } catch (IOException ex) {
-                    throw new RuntimeException(ex);
-
-
-                } catch (UnsupportedAudioFileException ex) {
-                    throw new RuntimeException(ex);
-                } catch (LineUnavailableException ex) {
-                    throw new RuntimeException(ex);
-                }
+                panel_sud.removeAll();
+                panel_sud.add(confirmer);
+                panel_sud.revalidate();
+                panel_sud.repaint();
 
             } else {
                 JOptionPane.showMessageDialog(null, "Erreur dans la saisie de données , veuillez réessayer. ", "Erreur", JOptionPane.ERROR_MESSAGE);
@@ -298,20 +342,6 @@ public class Parametres extends JFrame implements ActionListener {
         }
         return valide;
     }
-    public static String[] generateCoordinates() {
-        String[] coordinates = new String[10*10+1];
-        int index = 1;
-        coordinates[0] = null;
-        for (int i = 0; i < 10; i++) {
-            char letter = (char) ('A' + i);
-            for (int j = 0; j < 10; j++) {
-                coordinates[index++] = letter + String.valueOf(j);
-            }
-        }
-        return coordinates;
-    }
-
-
 
 
 }
