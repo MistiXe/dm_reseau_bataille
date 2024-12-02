@@ -14,6 +14,7 @@ public class Son {
         audioIn = AudioSystem.getAudioInputStream(f);
         c = AudioSystem.getClip();
         c.open(audioIn);
+        this.setVolume(-20);
         
     }
 
@@ -51,4 +52,16 @@ public class Son {
     public boolean isPlaying() {
         return c != null && c.isRunning();
     }
+
+    public void setVolume(float volume) {
+        if (c != null) {
+            if (c != null) {
+                FloatControl volumeControl = (FloatControl) c.getControl(FloatControl.Type.MASTER_GAIN);
+                volume = Math.min(volumeControl.getMaximum(), Math.max(volumeControl.getMinimum(), volume)); // Clamping
+                volumeControl.setValue(volume);
+            }
+        }
+    }
+
+
 }

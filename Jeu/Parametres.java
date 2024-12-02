@@ -25,10 +25,14 @@ public class Parametres extends JFrame implements ActionListener {
     private final JPanel pan_main = new JPanel();
     private final BorderLayout bl = new BorderLayout();
     private final JPanel main_panel = new JPanel();
-    private final GridLayout gl_settings = new GridLayout(5, 3);
+    private final GridLayout gl_settings = new GridLayout(6, 3);
     private final Integer[] choix_coord = {null, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
     private final String[] statement = {"Horizontal", "Vertical"};
     private final JLabel nom_du_pion = new JLabel("Porte-Avion (5 Cases) : ");
+    private final JLabel type = new JLabel("Type de bateau");
+    private final JLabel type_de_X = new JLabel("Coordonnées en X");
+    private final JLabel type_de_Y = new JLabel("Coordonnées en Y");
+    private final JLabel type_de_Etat = new JLabel("Orientation");
     private final JLabel nom_du_pion2 = new JLabel("Croiseur (4 Cases) : ");
     private final JLabel nom_du_pion3 = new JLabel("Torpilleur (1 Case) : ");
     private final JLabel nom_du_pion4 = new JLabel("Sous-Marins (2 Cases) : ");
@@ -71,6 +75,10 @@ public class Parametres extends JFrame implements ActionListener {
         // Position des Composants dans un GridLayout
         this.main_panel.setBackground(Color.lightGray);
         this.main_panel.setLayout(gl_settings);
+        this.main_panel.add(type);
+        this.main_panel.add(type_de_X);
+        this.main_panel.add(type_de_Y);
+        this.main_panel.add(type_de_Etat);
         this.main_panel.add(nom_du_pion);
         this.main_panel.add(LISTE_PION1);
         this.main_panel.add(LISTE_PION1_1);
