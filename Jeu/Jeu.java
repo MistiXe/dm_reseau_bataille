@@ -2,7 +2,6 @@ package Jeu;
 
 
 import Jeu.Connexion.Bateau;
-import Jeu.Connexion.Serveur;
 import Jeu.Extra.Son;
 import Jeu.Extra.Timer3min;
 
@@ -10,9 +9,15 @@ import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
 import javax.swing.*;
 import java.awt.*;
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.net.InetAddress;
+import java.net.ServerSocket;
+import java.net.Socket;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -31,76 +36,68 @@ public class Jeu extends JFrame {
     private JLabel pseudo = new JLabel(" Pseudo : " + InetAddress.getLocalHost().getHostAddress());
     private int points = 1;
     private JLabel score = new JLabel("Score : " + points);
+    private Map<String, Bateau> recu = new HashMap<>();
 
 
-    public Jeu(Map<String, Bateau> dico) throws IOException, UnsupportedAudioFileException, LineUnavailableException, ClassNotFoundException {
-        Serveur serv = new Serveur(dico);
-        this.dico_b = serv.getRecu();
-        this.setTitle("Partie Joueur");
+
+    public Jeu(Map<String, Bateau> liste_du_serveur) throws IOException, UnsupportedAudioFileException, LineUnavailableException {
+        // Configuration initiale
+        this.setTitle("Bataille Navale - Serveur");
         this.setSize(550, 500);
         this.setDefaultCloseOperation(EXIT_ON_CLOSE);
         this.setLocationRelativeTo(null);
-        this.setVisible(true);
-        int lignes = 10;
-        int colonnes = 10;
-        JPanel gridPanel = new JPanel(new GridLayout(lignes, colonnes));
 
-        for (int i = 0; i < lignes; i++) {
-            for (int j = 0; j < colonnes; j++) {
+        JPanel gridPanel = new JPanel(new GridLayout(10, 10));
+        JButton[][] boutons = new JButton[10][10];
+        boolean[] monTour = {true}; // Commence avec le serveur
+
+        ServerSocket serveurSocket = new ServerSocket(12345);
+        Socket socket = serveurSocket.accept();
+        BufferedReader input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+        PrintWriter output = new PrintWriter(socket.getOutputStream(), true);
+
+        // Création des boutons de la grille
+        for (int i = 0; i < 10; i++) {
+            for (int j = 0; j < 10; j++) {
                 JButton bouton = new JButton();
-                bouton.setFont(new Font("Arial", Font.BOLD, 20)); // Définit une grande police
+                boutons[i][j] = bouton;
                 bouton.setBackground(Color.CYAN);
-
-                ArrayList<Integer> ar = new ArrayList<>();
-                ar.add(i);
-                ar.add(j);
+                int x = i, y = j;
                 boolean estCaseOccupee = false;
-                for (Map.Entry<String, Bateau> m : dico_b.entrySet()) {
-                    if (m.getValue().getCoordinates().contains(ar)) {
-                        // Configuration des actions pour une case occupée par un bateau
-                        boolean finalEstCaseOccupee = estCaseOccupee;
-                        bouton.addActionListener(e -> {
-                            if (!finalEstCaseOccupee) {
-                                points++;
-                                score.setText("Score : " + points);
-                                bouton.setBackground(Color.RED);
-                                bouton.setText("O");
-                                bouton.setEnabled(false);
-                                s.play();
-                            }
-                        });
-                        estCaseOccupee = true;
-                    }
-                }
 
-                if (!estCaseOccupee) {
-                    // Configuration des actions pour une case vide
-                    bouton.addActionListener(e -> {
-                        bouton.setBackground(Color.WHITE);
-                        bouton.setEnabled(false);
-                    });
-                }
+                bouton.addActionListener(e -> {
+                    if (monTour[0]) {
+                        bouton.setEnabled(false); // Désactiver le bouton
+                        output.println("A ton tour"); // Envoyer la position au client
+                        bouton.setBackground(Color.RED);
+                        setEnabled(false); // Désactiver la fenêtre (c'est au tour de l'autre joueur)
+                        monTour[0] = false; // Passer le tour
+                        // Configuration des actions pour une case occupée par un bateau
+                    }
+                });
+
+
 
                 gridPanel.add(bouton);
             }
         }
 
-            this.add(panMain);
-            this.panMain.setLayout(bl);
-            panMain.add(gridPanel, BorderLayout.CENTER);
-            panMain.add(zoneJoueur, BorderLayout.SOUTH);
-            zoneJoueur.setLayout(gl);
-            zoneJoueur.add(pseudo);
-            pseudo.setHorizontalAlignment(CENTER);
-            score.setHorizontalAlignment(CENTER);
-            zoneJoueur.add(score);
-            zoneJoueur.add(new Timer3min(this));
-            this.setVisible(true);
+
+        new Thread(() -> {
+                while (true) {
+                    monTour[0] = true; // Tour au joueur actuel
+                    setEnabled(true); // Réactiver la fenêtre
+                }
 
 
-        }
+        }).start();
 
-        public void afficherDico (Map h){
+        this.add(gridPanel);
+        this.setVisible(true);
+    }
+
+
+    public void afficherDico (Map h){
             for (Map.Entry<String, Bateau> entry : dico_b.entrySet()) {
                 System.out.println("Nom du pion: " + entry.getKey());
                 System.out.println("Coordonnées :  " + entry.getValue().getCoordinates());
@@ -108,6 +105,8 @@ public class Jeu extends JFrame {
                 System.out.println("##############");
             }
         }
+
+
 
     }
 

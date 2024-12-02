@@ -2,7 +2,6 @@ package Jeu;
 
 
 import Jeu.Connexion.Bateau;
-import Jeu.Connexion.Serveur;
 import Jeu.Extra.Etat_Pion;
 import Jeu.Extra.Son;
 
@@ -162,8 +161,6 @@ public class Parametres extends JFrame implements ActionListener {
                 throw new RuntimeException(ex);
             } catch (LineUnavailableException ex) {
                 throw new RuntimeException(ex);
-            } catch (ClassNotFoundException ex) {
-                throw new RuntimeException(ex);
             }
         }
 
@@ -274,6 +271,7 @@ public class Parametres extends JFrame implements ActionListener {
                 JOptionPane.showMessageDialog(null, "Erreur dans la saisie de données , veuillez réessayer. ", "Erreur", JOptionPane.ERROR_MESSAGE);
                 this.dispose();
                 try {
+                    s.close();
                     new Parametres(10);
                 } catch (UnsupportedAudioFileException ex) {
                     throw new RuntimeException(ex);
