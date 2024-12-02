@@ -62,7 +62,12 @@ public class Jeu extends JFrame {
                         bouton.addActionListener(e -> bouton.setText("O"));
                         bouton.addActionListener(e -> s.play());
 
+
                     }
+
+                    bouton.addActionListener(e->bouton.setEnabled(false));
+
+
                 }
                 gridPanel.add(bouton);
             }
