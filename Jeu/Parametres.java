@@ -2,11 +2,6 @@ package Jeu;
 
 
 import Jeu.Connexion.Bateau;
-<<<<<<< Updated upstream
-=======
-import Jeu.Connexion.Client;
-import Jeu.Connexion.Serveur;
->>>>>>> Stashed changes
 import Jeu.Extra.Etat_Pion;
 import Jeu.Extra.Son;
 
@@ -232,26 +227,11 @@ public class Parametres extends JFrame implements ActionListener {
 
             }
 
-<<<<<<< Updated upstream
             for (Map.Entry<String, Bateau> m : dico_pion.entrySet()) {
                 for (ArrayList ar : m.getValue().getCoordinates()) {
                     indice_sougline.add(ar);
                 }
             }
-=======
-           if(estValide(coordinates)){
-               this.dispose();
-               try {
-                   Serveur s = new Serveur(dico_pion);
-                   Jeu j = new Jeu(dico_pion);
-               } catch (UnknownHostException ex) {
-                   throw new RuntimeException(ex);
-               } catch (IOException ex) {
-                   throw new RuntimeException(ex);
-               } catch (ClassNotFoundException ex) {
-                   throw new RuntimeException(ex);
-               }
->>>>>>> Stashed changes
 
             apercu = new JPanel() {
 
