@@ -34,7 +34,6 @@ public class Jeu extends JFrame {
 
     public Jeu(Map<String, Bateau> dico) throws IOException, UnsupportedAudioFileException, LineUnavailableException {
         this.dico_b = dico;
-        afficherDico(dico_b);
         this.setTitle("Partie Joueur");
         this.setSize(550, 500);
         this.setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -49,55 +48,66 @@ public class Jeu extends JFrame {
                 JButton bouton = new JButton();
                 bouton.setFont(new Font("Arial", Font.BOLD, 20)); // Définit une grande police
                 bouton.setBackground(Color.CYAN);
-                ArrayList<Integer> ar = new ArrayList<>();
 
+                ArrayList<Integer> ar = new ArrayList<>();
                 ar.add(i);
                 ar.add(j);
+                boolean estCaseOccupee = false;
                 for (Map.Entry<String, Bateau> m : dico_b.entrySet()) {
                     if (m.getValue().getCoordinates().contains(ar)) {
-
-                        bouton.addActionListener(e -> points++);
-                        bouton.addActionListener(e -> score.setText("Score : " + (points)));
-                        bouton.addActionListener(e -> bouton.setBackground(Color.RED));
-                        bouton.addActionListener(e -> bouton.setText("O"));
-                        bouton.addActionListener(e -> s.play());
-
-
+                        // Configuration des actions pour une case occupée par un bateau
+                        boolean finalEstCaseOccupee = estCaseOccupee;
+                        bouton.addActionListener(e -> {
+                            if (!finalEstCaseOccupee) {
+                                points++;
+                                score.setText("Score : " + points);
+                                bouton.setBackground(Color.RED);
+                                bouton.setText("O");
+                                bouton.setEnabled(false);
+                                s.play();
+                            }
+                        });
+                        estCaseOccupee = true;
                     }
-
-                    bouton.addActionListener(e->bouton.setEnabled(false));
-
-
                 }
+
+                if (!estCaseOccupee) {
+                    // Configuration des actions pour une case vide
+                    bouton.addActionListener(e -> {
+                        bouton.setBackground(Color.WHITE);
+                        bouton.setEnabled(false);
+                    });
+                }
+
                 gridPanel.add(bouton);
             }
         }
 
-        this.add(panMain);
-        this.panMain.setLayout(bl);
-        panMain.add(gridPanel, BorderLayout.CENTER);
-        panMain.add(zoneJoueur, BorderLayout.SOUTH);
-        zoneJoueur.setLayout(gl);
-        zoneJoueur.add(pseudo);
-        pseudo.setHorizontalAlignment(CENTER);
-        score.setHorizontalAlignment(CENTER);
-        zoneJoueur.add(score);
-        zoneJoueur.add(new Timer3min(this));
-        this.setVisible(true);
+            this.add(panMain);
+            this.panMain.setLayout(bl);
+            panMain.add(gridPanel, BorderLayout.CENTER);
+            panMain.add(zoneJoueur, BorderLayout.SOUTH);
+            zoneJoueur.setLayout(gl);
+            zoneJoueur.add(pseudo);
+            pseudo.setHorizontalAlignment(CENTER);
+            score.setHorizontalAlignment(CENTER);
+            zoneJoueur.add(score);
+            zoneJoueur.add(new Timer3min(this));
+            this.setVisible(true);
 
 
-    }
-
-    public void afficherDico(Map h) {
-        for (Map.Entry<String, Bateau> entry : dico_b.entrySet()) {
-            System.out.println("Nom du pion: " + entry.getKey());
-            System.out.println("Coordonnées :  " + entry.getValue().getCoordinates());
-            System.out.println("Etat : " + entry.getValue().getStates());
-            System.out.println("##############");
         }
+
+        public void afficherDico (Map h){
+            for (Map.Entry<String, Bateau> entry : dico_b.entrySet()) {
+                System.out.println("Nom du pion: " + entry.getKey());
+                System.out.println("Coordonnées :  " + entry.getValue().getCoordinates());
+                System.out.println("Etat : " + entry.getValue().getStates());
+                System.out.println("##############");
+            }
+        }
+
     }
 
-
-}
 
 
