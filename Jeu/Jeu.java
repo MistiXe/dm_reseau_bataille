@@ -50,9 +50,11 @@ public class Jeu extends JFrame {
         JPanel gridPanel = new JPanel(new GridLayout(10, 10));
         JButton[][] boutons = new JButton[10][10];
         boolean[] monTour = {true}; // Commence avec le serveur
-
+        // Activation du serveur
         ServerSocket serveurSocket = new ServerSocket(12345);
         Socket socket = serveurSocket.accept();
+        // Activation du client
+        // Socket socket = new Socket(InetAddress.getLocalHost().getHostAddress(),12345);
         BufferedReader input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         PrintWriter output = new PrintWriter(socket.getOutputStream(), true);
 
