@@ -67,6 +67,7 @@ public class Jeu extends JFrame {
                         if(estdanslaGrille(ar)) {
                             bouton.setEnabled(false);
                             bouton.setBackground(Color.RED);
+                            s.play();
                             output.println("C'est a ton tour");
                             monTour = false;
                             setGrilleActive(false);
@@ -82,6 +83,10 @@ public class Jeu extends JFrame {
                                 ex.printStackTrace();
                             }
 
+                        }else{
+                            bouton.setEnabled(false);
+                            monTour = false;
+                            setGrilleActive(false);
                         }
                     }
                 });
