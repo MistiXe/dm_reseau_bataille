@@ -16,6 +16,7 @@ import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -37,6 +38,7 @@ public class Jeu extends JFrame {
 
     public Jeu(Map<String, Bateau> liste_du_serveur) throws IOException, UnsupportedAudioFileException, LineUnavailableException {
         this.setTitle("Bataille Navale - Serveur");
+        this.dico_b =liste_du_serveur;
         this.setSize(550, 500);
         this.setDefaultCloseOperation(EXIT_ON_CLOSE);
         this.setLocationRelativeTo(null);
@@ -55,30 +57,39 @@ public class Jeu extends JFrame {
                 boutons[i][j] = bouton;
                 bouton.setBackground(Color.CYAN);
                 int x = i, y = j;
+                ArrayList<Integer> ar = new ArrayList<>();
+                ar.add(i);
+                ar.add(j);
 
                 bouton.addActionListener(e -> {
                     if (monTour) {
-                        bouton.setEnabled(false);
-                        bouton.setBackground(Color.RED);
-                        output.println("C'est a ton tour");
-                        monTour = false;
-                        setGrilleActive(false);
-                        points++;
-                        try {
-                            score.setText("Pesudo : + " + InetAddress.getLocalHost().getHostAddress() + " Score : " + points);
-                        } catch (UnknownHostException ex) {
-                            throw new RuntimeException(ex);
-                        }
-                        try {
-                            verifierFinDeJeu();
-                        } catch (InterruptedException ex) {
-                            ex.printStackTrace();
+
+                        if(estdanslaGrille(ar)) {
+                            bouton.setEnabled(false);
+                            bouton.setBackground(Color.RED);
+                            output.println("C'est a ton tour");
+                            monTour = false;
+                            setGrilleActive(false);
+                            points++;
+                            try {
+                                score.setText("Pesudo : + " + InetAddress.getLocalHost().getHostAddress() + " Score : " + points);
+                            } catch (UnknownHostException ex) {
+                                throw new RuntimeException(ex);
+                            }
+                            try {
+                                verifierFinDeJeu();
+                            } catch (InterruptedException ex) {
+                                ex.printStackTrace();
+                            }
+
                         }
                     }
                 });
 
+
                 gridPanel.add(bouton);
             }
+
         }
 
         this.add(gridPanel, BorderLayout.CENTER);
@@ -126,4 +137,18 @@ public class Jeu extends JFrame {
             }
         }
     }
+
+    public boolean estdanslaGrille(ArrayList<Integer> testeur) {
+        boolean estValide =  false;
+        for (Map.Entry<String, Bateau> map : dico_b.entrySet()) {
+            if (map.getValue().getCoordinates().contains(testeur)) {
+                estValide = true;
+            }
+        }
+
+        return estValide;
+    }
+
+
 }
+
