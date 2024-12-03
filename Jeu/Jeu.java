@@ -1,6 +1,5 @@
 package Jeu;
 
-
 import Jeu.Connexion.Bateau;
 import Jeu.Extra.Son;
 import Jeu.Extra.Timer3min;
@@ -16,12 +15,9 @@ import java.io.PrintWriter;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.Map;
-
-import static javax.swing.SwingConstants.CENTER;
 
 public class Jeu extends JFrame {
 
@@ -29,84 +25,75 @@ public class Jeu extends JFrame {
     private Map<String, Bateau> dico_b = new HashMap<>();
     private Son s = new Son("../dm_reseau_bataille/Jeu/Media/eau.wav");
 
-    private BorderLayout bl = new BorderLayout();
-    private JPanel panMain = new JPanel();
-    private JPanel zoneJoueur = new JPanel();
-    private GridLayout gl = new GridLayout(1, 3);
-    private JLabel pseudo = new JLabel(" Pseudo : " + InetAddress.getLocalHost().getHostAddress());
+    private JPanel gridPanel = new JPanel(new GridLayout(10, 10));
+    private JLabel score = new JLabel("Pesudo : + " + InetAddress.getLocalHost().getHostAddress() + "  Score : 1");
     private int points = 1;
-    private JLabel score = new JLabel("Score : " + points);
-    private Map<String, Bateau> recu = new HashMap<>();
 
-
+    private boolean monTour = true; // Indique si c'est le tour du joueur local
+    private ServerSocket serveurSocket;
+    private Socket socket;
+    private BufferedReader input;
+    private PrintWriter output;
 
     public Jeu(Map<String, Bateau> liste_du_serveur) throws IOException, UnsupportedAudioFileException, LineUnavailableException {
-        // Configuration initiale
         this.setTitle("Bataille Navale - Serveur");
         this.setSize(550, 500);
         this.setDefaultCloseOperation(EXIT_ON_CLOSE);
         this.setLocationRelativeTo(null);
+        Timer3min t = new Timer3min(this);
 
-        JPanel gridPanel = new JPanel(new GridLayout(10, 10));
-        JButton[][] boutons = new JButton[10][10];
-        boolean[] monTour = {true}; // Commence avec le serveur
-        // Activation du serveur
-        ServerSocket serveurSocket = new ServerSocket(12345);
-        Socket socket = serveurSocket.accept();
-        // Activation du client
-        // Socket socket = new Socket(InetAddress.getLocalHost().getHostAddress(),12345);
-        BufferedReader input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-        PrintWriter output = new PrintWriter(socket.getOutputStream(), true);
+        // Initialisation des sockets
+        serveurSocket = new ServerSocket(12345);
+        socket = serveurSocket.accept();
+        input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+        output = new PrintWriter(socket.getOutputStream(), true);
 
-        // Création des boutons de la grille
+        // Création de la grille
         for (int i = 0; i < 10; i++) {
             for (int j = 0; j < 10; j++) {
                 JButton bouton = new JButton();
                 boutons[i][j] = bouton;
                 bouton.setBackground(Color.CYAN);
                 int x = i, y = j;
-                boolean estCaseOccupee = false;
 
                 bouton.addActionListener(e -> {
-                    if (monTour[0]) {
-                        bouton.setEnabled(false); // Désactiver le bouton
-                        output.println("A ton tour"); // Envoyer la position au client
+                    if (monTour) {
+                        bouton.setEnabled(false);
                         bouton.setBackground(Color.RED);
-                        output.println(x + "," + y);  // Envoie les coordonnées au client
-                        setEnabled(false); // Désactiver la fenêtre (c'est au tour de l'autre joueur)
-                        monTour[0] = false; // Passer le tour
-                        // Mise à jour du score et vérification
+                        output.println("C'est a ton tour");
+                        monTour = false;
+                        setGrilleActive(false);
                         points++;
-                        score.setText("Score : " + points); // Actualise l'affichage du score
                         try {
-                            verifierFinDeJeu();  // Vérifie si le jeu doit se termineru
-                        } catch (InterruptedException ex) {
+                            score.setText("Pesudo : + " + InetAddress.getLocalHost().getHostAddress() + " Score : " + points);
+                        } catch (UnknownHostException ex) {
                             throw new RuntimeException(ex);
+                        }
+                        try {
+                            verifierFinDeJeu();
+                        } catch (InterruptedException ex) {
+                            ex.printStackTrace();
                         }
                     }
                 });
-
-
 
                 gridPanel.add(bouton);
             }
         }
 
+        this.add(gridPanel, BorderLayout.CENTER);
+        this.add(score, BorderLayout.SOUTH);
+        this.add(t, BorderLayout.NORTH);
 
+        // Ce que j'obtiens de l'adversaire
         new Thread(() -> {
             try {
                 while (true) {
-                    String message = input.readLine();  // Lire les coordonnées envoyées par le client
+                    String message = input.readLine();
                     if (message != null) {
-                        String[] coords = message.split(",");
-                        int x = Integer.parseInt(coords[0]);
-                        int y = Integer.parseInt(coords[1]);
-
-                        // Mise à jour de l'interface pour le tour adverse
                         SwingUtilities.invokeLater(() -> {
-                            boutons[x][y].setBackground(Color.BLUE);  // Marque la case adverse
-                            monTour[0] = true; // Rend le tour au serveur
-                            setGrilleActive(false);  // Désactive uniquement les boutons
+                            monTour = true;
+                            setGrilleActive(true);
                         });
                     }
                 }
@@ -115,18 +102,22 @@ public class Jeu extends JFrame {
             }
         }).start();
 
-        this.add(gridPanel);
         this.setVisible(true);
     }
 
     private void verifierFinDeJeu() throws InterruptedException {
-        if (points == 12 || temps==0 ) {
+        if (points == 12) {
             JOptionPane.showMessageDialog(this, "Félicitations ! Vous avez gagné !", "Fin du jeu", JOptionPane.INFORMATION_MESSAGE);
             Thread.sleep(5000);
-            System.exit(0);  // Ferme le jeu
+            try {
+                socket.close();
+                serveurSocket.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            System.exit(0);
         }
     }
-
 
     private void setGrilleActive(boolean active) {
         for (int i = 0; i < 10; i++) {
@@ -135,20 +126,4 @@ public class Jeu extends JFrame {
             }
         }
     }
-
-
-    public void afficherDico (Map h){
-            for (Map.Entry<String, Bateau> entry : dico_b.entrySet()) {
-                System.out.println("Nom du pion: " + entry.getKey());
-                System.out.println("Coordonnées :  " + entry.getValue().getCoordinates());
-                System.out.println("Etat : " + entry.getValue().getStates());
-                System.out.println("##############");
-            }
-        }
-
-
-
-    }
-
-
-
+}
