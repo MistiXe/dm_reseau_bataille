@@ -72,9 +72,17 @@ public class Jeu extends JFrame {
                         bouton.setEnabled(false); // Désactiver le bouton
                         output.println("A ton tour"); // Envoyer la position au client
                         bouton.setBackground(Color.RED);
+                        output.println(x + "," + y);  // Envoie les coordonnées au client
                         setEnabled(false); // Désactiver la fenêtre (c'est au tour de l'autre joueur)
                         monTour[0] = false; // Passer le tour
-                        // Configuration des actions pour une case occupée par un bateau
+                        // Mise à jour du score et vérification
+                        points++;
+                        score.setText("Score : " + points); // Actualise l'affichage du score
+                        try {
+                            verifierFinDeJeu();  // Vérifie si le jeu doit se termineru
+                        } catch (InterruptedException ex) {
+                            throw new RuntimeException(ex);
+                        }
                     }
                 });
 
@@ -86,16 +94,46 @@ public class Jeu extends JFrame {
 
 
         new Thread(() -> {
+            try {
                 while (true) {
-                    monTour[0] = true; // Tour au joueur actuel
-                    setEnabled(true); // Réactiver la fenêtre
+                    String message = input.readLine();  // Lire les coordonnées envoyées par le client
+                    if (message != null) {
+                        String[] coords = message.split(",");
+                        int x = Integer.parseInt(coords[0]);
+                        int y = Integer.parseInt(coords[1]);
+
+                        // Mise à jour de l'interface pour le tour adverse
+                        SwingUtilities.invokeLater(() -> {
+                            boutons[x][y].setBackground(Color.BLUE);  // Marque la case adverse
+                            monTour[0] = true; // Rend le tour au serveur
+                            setGrilleActive(false);  // Désactive uniquement les boutons
+                        });
+                    }
                 }
-
-
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }).start();
 
         this.add(gridPanel);
         this.setVisible(true);
+    }
+
+    private void verifierFinDeJeu() throws InterruptedException {
+        if (points == 12 || temps==0 ) {
+            JOptionPane.showMessageDialog(this, "Félicitations ! Vous avez gagné !", "Fin du jeu", JOptionPane.INFORMATION_MESSAGE);
+            Thread.sleep(5000);
+            System.exit(0);  // Ferme le jeu
+        }
+    }
+
+
+    private void setGrilleActive(boolean active) {
+        for (int i = 0; i < 10; i++) {
+            for (int j = 0; j < 10; j++) {
+                boutons[i][j].setEnabled(active && boutons[i][j].getBackground() == Color.CYAN);
+            }
+        }
     }
 
 
