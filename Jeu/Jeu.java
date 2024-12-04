@@ -25,39 +25,46 @@ public class Jeu extends JFrame {
     private JLabel pseudo_i = new JLabel();
     private int points = 1;
     private JPanel pan_south = new JPanel(new GridLayout(1, 3));
-    private JLabel p = new JLabel("Votre score est de " + String.valueOf(points));
-    private JLabel passe_tour =  new JLabel("Au tour de  : ");
+    private JLabel p = new JLabel("Votre score est de " + points);
+    private JLabel passe_tour = new JLabel("Au tour de : ");
 
-    private boolean monTour = true; // Indique si c'est le tour du joueur local
+    private boolean monTour = true;
     private ServerSocket serveurSocket;
     private Socket socket;
     private BufferedReader input;
     private PrintWriter output;
+    private String pseudoLocal;
+    private String pseudoAdversaire;
 
-    public Jeu(Map<String, Bateau> liste_du_serveur, String pseudo,String reseau) throws IOException, UnsupportedAudioFileException, LineUnavailableException {
-        this.setTitle("Bataille Navale - " +reseau);
+    public Jeu(Map<String, Bateau> liste_du_serveur, String reseau)
+            throws IOException, UnsupportedAudioFileException, LineUnavailableException {
+        this.setTitle("Bataille Navale - " + reseau);
         this.dico_b = liste_du_serveur;
         this.setSize(550, 500);
         this.setDefaultCloseOperation(EXIT_ON_CLOSE);
         this.setLocationRelativeTo(null);
         Timer3min t = new Timer3min(this);
         this.add(pan_south, BorderLayout.SOUTH);
-        pseudo_i.setText("Joueur : " + pseudo);
         pan_south.add(this.pseudo_i);
         pan_south.add(p);
         pan_south.add(passe_tour);
 
-        // Initialisation des sockets
         serveurSocket = new ServerSocket(12345);
-        socket = serveurSocket.accept(); // socket = new Socket("192.168.179.203", 12345);
+        socket = serveurSocket.accept();
         input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         output = new PrintWriter(socket.getOutputStream(), true);
 
-        // Échanger les dictionnaires des bateaux avec l'adversaire
+        pseudoLocal = JOptionPane.showInputDialog(this, "Entrez votre pseudo :");
+        pseudoAdversaire = input.readLine(); // Lire le pseudo de l'adversaire envoyé par le client
+
+        output.println(pseudoLocal); // Envoyer le pseudo local à l'adversaire
+
+        pseudo_i.setText("Joueur : " + pseudoLocal);
+        updateLabelTour();
+
         envoyerDictionnaire();
         recevoirDictionnaire();
 
-        // Création de la grille
         for (int i = 0; i < 10; i++) {
             for (int j = 0; j < 10; j++) {
                 JButton bouton = new JButton();
@@ -80,13 +87,10 @@ public class Jeu extends JFrame {
                         s.play();
                         output.println("TOUR");
                         monTour = false;
+                        updateLabelTour();
                         setGrilleActive(false);
-
                         points++;
-                        p.setText("Votre score est de " + String.valueOf(points));
-
-
-
+                        p.setText("Votre score est de " + points);
                         try {
                             verifierFinDeJeu();
                         } catch (InterruptedException ex) {
@@ -95,10 +99,9 @@ public class Jeu extends JFrame {
                     } else {
                         bouton.setEnabled(false);
                         bouton.setBackground(Color.DARK_GRAY);
-
-                        // Passer le tour
                         output.println("TOUR");
                         monTour = false;
+                        updateLabelTour();
                         setGrilleActive(false);
                     }
                 });
@@ -110,7 +113,6 @@ public class Jeu extends JFrame {
         this.add(gridPanel, BorderLayout.CENTER);
         this.add(t, BorderLayout.NORTH);
 
-        // Ce que j'obtiens de l'adversaire
         new Thread(() -> {
             try {
                 while (true) {
@@ -119,6 +121,7 @@ public class Jeu extends JFrame {
                         if (message.equals("TOUR")) {
                             SwingUtilities.invokeLater(() -> {
                                 monTour = true;
+                                updateLabelTour();
                                 setGrilleActive(true);
                             });
                         }
@@ -132,13 +135,13 @@ public class Jeu extends JFrame {
         this.setVisible(true);
     }
 
-
-
-
-
-
-
-
+    private void updateLabelTour() {
+        if (monTour) {
+            passe_tour.setText("Au tour de : " + pseudoLocal);
+        } else {
+            passe_tour.setText("Au tour de : " + pseudoAdversaire);
+        }
+    }
 
     private void envoyerDictionnaire() {
         try {
@@ -150,7 +153,7 @@ public class Jeu extends JFrame {
                 }
                 output.println(bateauData.toString());
             }
-            output.println("END"); // Indiquer la fin de l'envoi
+            output.println("END");
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -158,17 +161,15 @@ public class Jeu extends JFrame {
 
     private void recevoirDictionnaire() {
         try {
-            dico_b.clear(); // Vider le dictionnaire local
+            dico_b.clear();
             String line;
             while (!(line = input.readLine()).equals("END")) {
                 String[] parts = line.split(",", 2);
                 String key = parts[0];
                 Bateau bateau = new Bateau();
-
                 if (parts.length > 1) {
                     String[] coordGroups = parts[1].split(";");
                     ArrayList<ArrayList<Integer>> coordinates = new ArrayList<>();
-
                     for (String group : coordGroups) {
                         if (!group.isEmpty()) {
                             String[] coordParts = group.split(",");
@@ -178,10 +179,8 @@ public class Jeu extends JFrame {
                             coordinates.add(coord);
                         }
                     }
-
                     bateau.addCoordinate(coordinates);
                 }
-
                 dico_b.put(key, bateau);
             }
         } catch (Exception e) {

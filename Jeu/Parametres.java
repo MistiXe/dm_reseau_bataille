@@ -57,7 +57,7 @@ public class Parametres extends JFrame implements ActionListener {
     private ArrayList<ArrayList<Integer>> coordinates;
     private JPanel apercu;
     private final Son s;
-    private JTextField pseudo_saisie = new JTextField("IronMarmot");
+
 
     public Parametres(int taille) throws UnsupportedAudioFileException, LineUnavailableException, IOException {
         this.SIZE = taille;
@@ -91,8 +91,6 @@ public class Parametres extends JFrame implements ActionListener {
         this.main_panel.add(nom_du_pion4);
         this.main_panel.add(LISTE_PION4);
         this.main_panel.add(LISTE_PION_AL4);
-        this.main_panel.add(Pseudo);
-        this.main_panel.add(pseudo_saisie);
         this.main_panel.add(liste_reseau);
 
         System.out.println(new ArrayList<>(Arrays.asList(generateCoordinates())));
@@ -160,7 +158,7 @@ public class Parametres extends JFrame implements ActionListener {
 
         if (e.getSource() == confirmer) {
             try {
-                Jeu jeu = new Jeu(dico_pion, pseudo_saisie.getText(), liste_reseau.getSelectedItem().toString());
+                Jeu jeu = new Jeu(dico_pion, liste_reseau.getSelectedItem().toString());
             } catch (IOException ex) {
                 throw new RuntimeException(ex);
             } catch (UnsupportedAudioFileException ex) {
