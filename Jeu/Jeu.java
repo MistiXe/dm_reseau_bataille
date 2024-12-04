@@ -8,10 +8,7 @@ import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
 import javax.swing.*;
 import java.awt.*;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
+import java.io.*;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -27,7 +24,7 @@ public class Jeu extends JFrame {
     private Son s = new Son("../dm_reseau_bataille/Jeu/Media/eau.wav");
 
     private JPanel gridPanel = new JPanel(new GridLayout(10, 10));
-    private JLabel score = new JLabel("Pesudo : + " + InetAddress.getLocalHost().getHostAddress() + "  Score : 1");
+    private JLabel score = new JLabel("Pseudo : " + InetAddress.getLocalHost().getHostAddress() + "  Score : 1");
     private int points = 1;
 
     private boolean monTour = true; // Indique si c'est le tour du joueur local
@@ -38,7 +35,7 @@ public class Jeu extends JFrame {
 
     public Jeu(Map<String, Bateau> liste_du_serveur) throws IOException, UnsupportedAudioFileException, LineUnavailableException {
         this.setTitle("Bataille Navale - Serveur");
-        this.dico_b =liste_du_serveur;
+        this.dico_b = liste_du_serveur;
         this.setSize(550, 500);
         this.setDefaultCloseOperation(EXIT_ON_CLOSE);
         this.setLocationRelativeTo(null);
@@ -49,6 +46,10 @@ public class Jeu extends JFrame {
         socket = serveurSocket.accept();
         input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         output = new PrintWriter(socket.getOutputStream(), true);
+
+        // Échanger les dictionnaires des bateaux avec l'adversaire
+        envoyerDictionnaire();
+        recevoirDictionnaire();
 
         // Création de la grille
         for (int i = 0; i < 10; i++) {
@@ -62,39 +63,47 @@ public class Jeu extends JFrame {
                 ar.add(j);
 
                 bouton.addActionListener(e -> {
-                    if (monTour) {
+                    if (!monTour) {
+                        return; // Si ce n'est pas le tour du joueur, ignorer le clic
+                    }
 
-                        if(estdanslaGrille(ar)) {
-                            bouton.setEnabled(false);
-                            bouton.setBackground(Color.RED);
-                            s.play();
-                            output.println("C'est a ton tour");
-                            monTour = false;
-                            setGrilleActive(false);
-                            points++;
-                            try {
-                                score.setText("Pesudo : + " + InetAddress.getLocalHost().getHostAddress() + " Score : " + points);
-                            } catch (UnknownHostException ex) {
-                                throw new RuntimeException(ex);
-                            }
-                            try {
-                                verifierFinDeJeu();
-                            } catch (InterruptedException ex) {
-                                ex.printStackTrace();
-                            }
+                    if (estdanslaGrille(ar)) {
+                        bouton.setEnabled(false);
+                        bouton.setBackground(Color.RED);
+                        bouton.setText("X");
+                        bouton.setForeground(Color.WHITE);
+                        s.play();
 
-                        }else{
-                            bouton.setEnabled(false);
-                            monTour = false;
-                            setGrilleActive(false);
+                        // Envoyer un message à l'adversaire pour lui signaler que son tour commence
+                        output.println("TOUR");
+                        monTour = false;
+                        setGrilleActive(false);
+
+                        points++;
+                        try {
+                            score.setText("Pseudo : " + InetAddress.getLocalHost().getHostAddress() + " Score : " + points);
+                        } catch (UnknownHostException ex) {
+                            throw new RuntimeException(ex);
                         }
+
+                        try {
+                            verifierFinDeJeu();
+                        } catch (InterruptedException ex) {
+                            ex.printStackTrace();
+                        }
+                    } else {
+                        bouton.setEnabled(false);
+                        bouton.setBackground(Color.DARK_GRAY);
+
+                        // Passer le tour
+                        output.println("TOUR");
+                        monTour = false;
+                        setGrilleActive(false);
                     }
                 });
 
-
                 gridPanel.add(bouton);
             }
-
         }
 
         this.add(gridPanel, BorderLayout.CENTER);
@@ -107,10 +116,12 @@ public class Jeu extends JFrame {
                 while (true) {
                     String message = input.readLine();
                     if (message != null) {
-                        SwingUtilities.invokeLater(() -> {
-                            monTour = true;
-                            setGrilleActive(true);
-                        });
+                        if (message.equals("TOUR")) {
+                            SwingUtilities.invokeLater(() -> {
+                                monTour = true;
+                                setGrilleActive(true);
+                            });
+                        }
                     }
                 }
             } catch (IOException e) {
@@ -121,13 +132,64 @@ public class Jeu extends JFrame {
         this.setVisible(true);
     }
 
+    private void envoyerDictionnaire() {
+        try {
+            for (Map.Entry<String, Bateau> entry : dico_b.entrySet()) {
+                StringBuilder bateauData = new StringBuilder(entry.getKey());
+                bateauData.append(",");
+                for (ArrayList<Integer> coord : entry.getValue().getCoordinates()) {
+                    bateauData.append(coord.get(0)).append(",").append(coord.get(1)).append(";");
+                }
+                output.println(bateauData.toString());
+            }
+            output.println("END"); // Indiquer la fin de l'envoi
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void recevoirDictionnaire() {
+        try {
+            dico_b.clear(); // Vider le dictionnaire local
+            String line;
+            while (!(line = input.readLine()).equals("END")) {
+                String[] parts = line.split(",", 2);
+                String key = parts[0];
+                Bateau bateau = new Bateau();
+
+                if (parts.length > 1) {
+                    String[] coordGroups = parts[1].split(";");
+                    ArrayList<ArrayList<Integer>> coordinates = new ArrayList<>();
+
+                    for (String group : coordGroups) {
+                        if (!group.isEmpty()) {
+                            String[] coordParts = group.split(",");
+                            ArrayList<Integer> coord = new ArrayList<>();
+                            coord.add(Integer.parseInt(coordParts[0]));
+                            coord.add(Integer.parseInt(coordParts[1]));
+                            coordinates.add(coord);
+                        }
+                    }
+
+                    bateau.addCoordinate(coordinates);
+                }
+
+                dico_b.put(key, bateau);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     private void verifierFinDeJeu() throws InterruptedException {
         if (points == 12) {
             JOptionPane.showMessageDialog(this, "Félicitations ! Vous avez gagné !", "Fin du jeu", JOptionPane.INFORMATION_MESSAGE);
             Thread.sleep(5000);
             try {
                 socket.close();
-                serveurSocket.close();
+                if (serveurSocket != null) {
+                    serveurSocket.close();
+                }
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -144,16 +206,11 @@ public class Jeu extends JFrame {
     }
 
     public boolean estdanslaGrille(ArrayList<Integer> testeur) {
-        boolean estValide =  false;
         for (Map.Entry<String, Bateau> map : dico_b.entrySet()) {
             if (map.getValue().getCoordinates().contains(testeur)) {
-                estValide = true;
+                return true;
             }
         }
-
-        return estValide;
+        return false;
     }
-
-
 }
-
