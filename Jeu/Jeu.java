@@ -1,7 +1,6 @@
 package Jeu;
 
 import Jeu.Connexion.Bateau;
-import Jeu.Extra.Etats_bataille_Navale;
 import Jeu.Extra.Son;
 import Jeu.Extra.Timer3min;
 
@@ -10,10 +9,8 @@ import javax.sound.sampled.UnsupportedAudioFileException;
 import javax.swing.*;
 import java.awt.*;
 import java.io.*;
-import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -25,8 +22,9 @@ public class Jeu extends JFrame {
     private Son s = new Son("../dm_reseau_bataille/Jeu/Media/eau.wav");
 
     private JPanel gridPanel = new JPanel(new GridLayout(10, 10));
-    private JLabel score = new JLabel("Pseudo : " + InetAddress.getLocalHost().getHostAddress() + "  Score : 1");
+    private JLabel pseudo_i = new JLabel();
     private int points = 1;
+    private JPanel pan_south = new JPanel(new GridLayout(1, 3));
 
     private boolean monTour = true; // Indique si c'est le tour du joueur local
     private ServerSocket serveurSocket;
@@ -35,16 +33,19 @@ public class Jeu extends JFrame {
     private PrintWriter output;
 
     public Jeu(Map<String, Bateau> liste_du_serveur, String pseudo,String reseau) throws IOException, UnsupportedAudioFileException, LineUnavailableException {
-        this.setTitle("Bataille Navale - Serveur");
+        this.setTitle("Bataille Navale - " +reseau);
         this.dico_b = liste_du_serveur;
         this.setSize(550, 500);
         this.setDefaultCloseOperation(EXIT_ON_CLOSE);
         this.setLocationRelativeTo(null);
         Timer3min t = new Timer3min(this);
+        this.add(pan_south, BorderLayout.SOUTH);
+        pseudo_i.setText("Joueur : " + pseudo);
+        pan_south.add(this.pseudo_i);
 
         // Initialisation des sockets
         serveurSocket = new ServerSocket(12345);
-        socket = serveurSocket.accept();
+        socket = serveurSocket.accept(); // socket = new Socket("192.168.179.203", 12345);
         input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         output = new PrintWriter(socket.getOutputStream(), true);
 
@@ -79,7 +80,7 @@ public class Jeu extends JFrame {
 
                         points++;
 
-                        score.setText("Pseudo : " + pseudo + " Score : " + points);
+
 
                         try {
                             verifierFinDeJeu();
@@ -102,7 +103,6 @@ public class Jeu extends JFrame {
         }
 
         this.add(gridPanel, BorderLayout.CENTER);
-        this.add(score, BorderLayout.SOUTH);
         this.add(t, BorderLayout.NORTH);
 
         // Ce que j'obtiens de l'adversaire
