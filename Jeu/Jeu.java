@@ -132,6 +132,14 @@ public class Jeu extends JFrame {
         this.setVisible(true);
     }
 
+
+
+
+
+
+
+
+
     private void envoyerDictionnaire() {
         try {
             for (Map.Entry<String, Bateau> entry : dico_b.entrySet()) {
