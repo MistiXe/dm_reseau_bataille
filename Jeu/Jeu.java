@@ -25,6 +25,8 @@ public class Jeu extends JFrame {
     private JLabel pseudo_i = new JLabel();
     private int points = 1;
     private JPanel pan_south = new JPanel(new GridLayout(1, 3));
+    private JLabel p = new JLabel(String.valueOf(points));
+    private JLabel passe_tour =  new JLabel("Au tour de  : ");
 
     private boolean monTour = true; // Indique si c'est le tour du joueur local
     private ServerSocket serveurSocket;
@@ -42,6 +44,8 @@ public class Jeu extends JFrame {
         this.add(pan_south, BorderLayout.SOUTH);
         pseudo_i.setText("Joueur : " + pseudo);
         pan_south.add(this.pseudo_i);
+        pan_south.add(p);
+        pan_south.add(passe_tour);
 
         // Initialisation des sockets
         serveurSocket = new ServerSocket(12345);
@@ -79,6 +83,7 @@ public class Jeu extends JFrame {
                         setGrilleActive(false);
 
                         points++;
+                        p.setText(String.valueOf(points));
 
 
 
