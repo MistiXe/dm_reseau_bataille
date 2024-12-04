@@ -25,7 +25,7 @@ public class Jeu extends JFrame {
     private JLabel pseudo_i = new JLabel();
     private int points = 1;
     private JPanel pan_south = new JPanel(new GridLayout(1, 3));
-    private JLabel p = new JLabel(String.valueOf(points));
+    private JLabel p = new JLabel("Votre score est de " + String.valueOf(points));
     private JLabel passe_tour =  new JLabel("Au tour de  : ");
 
     private boolean monTour = true; // Indique si c'est le tour du joueur local
@@ -83,7 +83,7 @@ public class Jeu extends JFrame {
                         setGrilleActive(false);
 
                         points++;
-                        p.setText(String.valueOf(points));
+                        p.setText("Votre score est de " + String.valueOf(points));
 
 
 
