@@ -75,8 +75,7 @@ public class Interface extends JFrame implements ActionListener {
 
         // Gestion du son
 
-        s = new Son("../dm_reseau_bataille/Jeu/Media/ritmada.wav");
-        s.loop();
+
 
 
 
@@ -93,17 +92,16 @@ public class Interface extends JFrame implements ActionListener {
                     "Le vainqueur est le premier à couler tous les navires de l’adversaire.";
             JOptionPane.showMessageDialog(this, s, "Alert", JOptionPane.WARNING_MESSAGE);
         } else if (e.getSource() == button1) {
-            try {
-                s.close();
-            } catch (IOException ex) {
-                throw new RuntimeException(ex);
-            }
-            this.dispose();
-            try {
-                Parametres p = new Parametres(10);
-            } catch (Exception ex) {
-                throw new RuntimeException(ex);
-            }
+
+
+
+                this.dispose();
+                try {
+                    Parametres p = new Parametres(10);
+                } catch (Exception ex) {
+                    throw new RuntimeException(ex);
+                }
+
         }
     }
 

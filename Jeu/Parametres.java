@@ -2,7 +2,7 @@ package Jeu;
 
 
 import Jeu.Connexion.Bateau;
-import Jeu.Extra.Etat_Pion;
+import Jeu.Extra.Etats_bataille_Navale;
 import Jeu.Extra.Son;
 
 import javax.sound.sampled.LineUnavailableException;
@@ -27,10 +27,11 @@ public class Parametres extends JFrame implements ActionListener {
     private final GridLayout gl_s = new GridLayout(1, 1);
     private final JPanel main_panel = new JPanel();
     private final JPanel panel_sud = new JPanel();
-    private final GridLayout apercu_bis = new GridLayout(10, 10);
-    private final GridLayout gl_settings = new GridLayout(6, 2);
+    private final GridLayout gl_settings = new GridLayout(7, 2);
     private final String[] statement = {null, "Horizontal", "Vertical"};
+    private final String[] etat_reseau = {"Serveur", "Client"};
     private final JLabel nom_du_pion = new JLabel("Porte-Avion (5 Cases) : ");
+    private final JLabel Pseudo = new JLabel("Saisir son pseudo");
     private final JLabel type = new JLabel("Type de bateau");
     private final JLabel type_de_X = new JLabel("Coordonnées :");
     private final JLabel type_de_Etat = new JLabel("Orientation");
@@ -45,17 +46,18 @@ public class Parametres extends JFrame implements ActionListener {
     private final JComboBox<String> LISTE_PION_AL2 = new JComboBox<>(statement);
     private final JComboBox<String> LISTE_PION_AL3 = new JComboBox<>(statement);
     private final JComboBox<String> LISTE_PION_AL4 = new JComboBox<>(statement);
+    private final JComboBox<String> liste_reseau = new JComboBox<>(etat_reseau);
     private final ArrayList<JComboBox> liste_combo = new ArrayList<>();
-    private final ArrayList<Etat_Pion> liste_etat = new ArrayList<>();
+    private final ArrayList<Etats_bataille_Navale.Pion> liste_etat = new ArrayList<>();
     private final ArrayList<JComboBox> liste_combo_etat = new ArrayList<>();
     private final JButton valider = new JButton("Valider");
     private final JButton confirmer = new JButton("Confirmer");
-    private final int cpt = 0;
     ArrayList<ArrayList<Integer>> tableau_de_zero = new ArrayList<>();
     Map<String, Bateau> dico_pion = new HashMap<>();
     private ArrayList<ArrayList<Integer>> coordinates;
     private JPanel apercu;
     private final Son s;
+    private JTextField pseudo_saisie = new JTextField("IronMarmot");
 
     public Parametres(int taille) throws UnsupportedAudioFileException, LineUnavailableException, IOException {
         this.SIZE = taille;
@@ -89,6 +91,10 @@ public class Parametres extends JFrame implements ActionListener {
         this.main_panel.add(nom_du_pion4);
         this.main_panel.add(LISTE_PION4);
         this.main_panel.add(LISTE_PION_AL4);
+        this.main_panel.add(Pseudo);
+        this.main_panel.add(pseudo_saisie);
+        this.main_panel.add(liste_reseau);
+
         System.out.println(new ArrayList<>(Arrays.asList(generateCoordinates())));
         liste_combo.add(LISTE_PION1);
         liste_combo.add(LISTE_PION2);
@@ -154,7 +160,7 @@ public class Parametres extends JFrame implements ActionListener {
 
         if (e.getSource() == confirmer) {
             try {
-                Jeu jeu = new Jeu(dico_pion);
+                Jeu jeu = new Jeu(dico_pion, pseudo_saisie.getText(), liste_reseau.getSelectedItem().toString());
             } catch (IOException ex) {
                 throw new RuntimeException(ex);
             } catch (UnsupportedAudioFileException ex) {
@@ -290,10 +296,10 @@ public class Parametres extends JFrame implements ActionListener {
             if (e.getSource() == cbe) {
                 cbe.setEnabled(false);
                 if (cbe.getSelectedItem().toString().equalsIgnoreCase("HORIZONTAL")) {
-                    liste_etat.add(Etat_Pion.HORIZONTAL);
+                    liste_etat.add(Etats_bataille_Navale.Pion.HORIZONTAL);
 
                 } else {
-                    liste_etat.add(Etat_Pion.VERTICAL);
+                    liste_etat.add(Etats_bataille_Navale.Pion.VERTICAL);
 
                 }
             }
@@ -306,10 +312,10 @@ public class Parametres extends JFrame implements ActionListener {
         }
     }
 
-    public ArrayList<ArrayList<Integer>> generateIndex(ArrayList<Integer> integ, int dupp, Etat_Pion e) {
+    public ArrayList<ArrayList<Integer>> generateIndex(ArrayList<Integer> integ, int dupp, Etats_bataille_Navale.Pion e) {
         ArrayList<ArrayList<Integer>> liste_genere = new ArrayList<>();
         for (int i = 0; i < dupp; i++) {
-            if (e.equals(Etat_Pion.VERTICAL)) {
+            if (e.equals(Etats_bataille_Navale.Pion.VERTICAL)) {
                 ArrayList<Integer> sous_liste = new ArrayList<>(integ);
                 integ.set(0, integ.get(0) + 1);
                 liste_genere.add(sous_liste);

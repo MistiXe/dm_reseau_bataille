@@ -1,6 +1,7 @@
 package Jeu;
 
 import Jeu.Connexion.Bateau;
+import Jeu.Extra.Etats_bataille_Navale;
 import Jeu.Extra.Son;
 import Jeu.Extra.Timer3min;
 
@@ -33,7 +34,7 @@ public class Jeu extends JFrame {
     private BufferedReader input;
     private PrintWriter output;
 
-    public Jeu(Map<String, Bateau> liste_du_serveur) throws IOException, UnsupportedAudioFileException, LineUnavailableException {
+    public Jeu(Map<String, Bateau> liste_du_serveur, String pseudo,String reseau) throws IOException, UnsupportedAudioFileException, LineUnavailableException {
         this.setTitle("Bataille Navale - Serveur");
         this.dico_b = liste_du_serveur;
         this.setSize(550, 500);
@@ -57,14 +58,13 @@ public class Jeu extends JFrame {
                 JButton bouton = new JButton();
                 boutons[i][j] = bouton;
                 bouton.setBackground(Color.CYAN);
-                int x = i, y = j;
                 ArrayList<Integer> ar = new ArrayList<>();
                 ar.add(i);
                 ar.add(j);
 
                 bouton.addActionListener(e -> {
                     if (!monTour) {
-                        return; // Si ce n'est pas le tour du joueur, ignorer le clic
+                        return;
                     }
 
                     if (estdanslaGrille(ar)) {
@@ -73,18 +73,13 @@ public class Jeu extends JFrame {
                         bouton.setText("X");
                         bouton.setForeground(Color.WHITE);
                         s.play();
-
-                        // Envoyer un message à l'adversaire pour lui signaler que son tour commence
                         output.println("TOUR");
                         monTour = false;
                         setGrilleActive(false);
 
                         points++;
-                        try {
-                            score.setText("Pseudo : " + InetAddress.getLocalHost().getHostAddress() + " Score : " + points);
-                        } catch (UnknownHostException ex) {
-                            throw new RuntimeException(ex);
-                        }
+
+                        score.setText("Pseudo : " + pseudo + " Score : " + points);
 
                         try {
                             verifierFinDeJeu();
