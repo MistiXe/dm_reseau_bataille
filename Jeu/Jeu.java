@@ -1,7 +1,8 @@
 package Jeu;
 
+import Jeu.Extra.Etats_bataille_Navale;
 import Jeu.Extra.Son;
-import Jeu.Extra.Timer3min;
+import Jeu.Extra.Temps;
 
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
@@ -35,21 +36,26 @@ public class Jeu extends JFrame {
     private String pseudoLocal;
     private String pseudoAdversaire;
 
-    public Jeu(Map<String, Bateau> liste_du_serveur, String reseau)
+    public Jeu(Map<String, Bateau> liste_du_serveur, Etats_bataille_Navale.Etat reseau)
             throws IOException, UnsupportedAudioFileException, LineUnavailableException {
         this.setTitle("Bataille Navale - " + reseau);
         this.dico_b = liste_du_serveur;
         this.setSize(550, 500);
         this.setDefaultCloseOperation(EXIT_ON_CLOSE);
         this.setLocationRelativeTo(null);
-        Timer3min t = new Timer3min(this);
+        Temps t = new Temps(this);
         this.add(pan_south, BorderLayout.SOUTH);
         pan_south.add(this.pseudo_i);
         pan_south.add(p);
         pan_south.add(passe_tour);
 
-        serveurSocket = new ServerSocket(12345);
-        socket = serveurSocket.accept();
+
+        if(reseau.equals(Etats_bataille_Navale.Etat.SERVEUR)) {
+            serveurSocket = new ServerSocket(12345);
+            socket = serveurSocket.accept();
+        }else{
+            socket = new Socket("", 12345);
+        }
         input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         output = new PrintWriter(socket.getOutputStream(), true);
 

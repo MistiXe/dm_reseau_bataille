@@ -5,14 +5,14 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-public class Timer3min extends JPanel {
+public class Temps extends JPanel {
 
     private static final int TIMER_DURATION = 4 * 60; // Durée en secondes (3 minutes)
     private int timeRemaining = TIMER_DURATION;      // Temps restant en secondes
     private JLabel timerLabel;
     private Timer timer;
 
-    public Timer3min(JFrame f) {
+    public Temps(JFrame f) {
         // Configurer le panel
         this.setLayout(new BorderLayout());
         this.setPreferredSize(new Dimension(100, 50));

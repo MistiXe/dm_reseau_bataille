@@ -45,7 +45,9 @@ public class Parametres extends JFrame implements ActionListener {
     private final JComboBox<String> LISTE_PION_AL2 = new JComboBox<>(statement);
     private final JComboBox<String> LISTE_PION_AL3 = new JComboBox<>(statement);
     private final JComboBox<String> LISTE_PION_AL4 = new JComboBox<>(statement);
-    private final JComboBox<String> liste_reseau = new JComboBox<>(etat_reseau);
+    private final JRadioButton serv = new JRadioButton("Serveur");
+    private final JRadioButton cli = new JRadioButton("Client");
+    private final ButtonGroup buttonGroup = new ButtonGroup();
     private final ArrayList<JComboBox> liste_combo = new ArrayList<>();
     private final ArrayList<Etats_bataille_Navale.Pion> liste_etat = new ArrayList<>();
     private final ArrayList<JComboBox> liste_combo_etat = new ArrayList<>();
@@ -90,7 +92,11 @@ public class Parametres extends JFrame implements ActionListener {
         this.main_panel.add(nom_du_pion4);
         this.main_panel.add(LISTE_PION4);
         this.main_panel.add(LISTE_PION_AL4);
-        this.main_panel.add(liste_reseau);
+        this.main_panel.add(reseau);
+        this.main_panel.add(serv);
+        this.main_panel.add(cli);
+        buttonGroup.add(serv);
+        buttonGroup.add(cli);
 
         System.out.println(new ArrayList<>(Arrays.asList(generateCoordinates())));
         liste_combo.add(LISTE_PION1);
@@ -157,7 +163,7 @@ public class Parametres extends JFrame implements ActionListener {
 
         if (e.getSource() == confirmer) {
             try {
-                Jeu jeu = new Jeu(dico_pion, liste_reseau.getSelectedItem().toString());
+                Jeu jeu = new Jeu(dico_pion, setEtatServeur());
             } catch (IOException ex) {
                 throw new RuntimeException(ex);
             } catch (UnsupportedAudioFileException ex) {
@@ -286,6 +292,8 @@ public class Parametres extends JFrame implements ActionListener {
             }
 
 
+
+
         }
 
 
@@ -342,6 +350,14 @@ public class Parametres extends JFrame implements ActionListener {
             }
         }
         return valide;
+    }
+
+    public Etats_bataille_Navale.Etat setEtatServeur(){
+        if(cli.isSelected()){
+            return Etats_bataille_Navale.Etat.CLIENT;
+        }else{
+            return Etats_bataille_Navale.Etat.SERVEUR;
+        }
     }
 
 
