@@ -1,7 +1,6 @@
 package Jeu;
 
 
-import Jeu.Connexion.Bateau;
 import Jeu.Extra.Etats_bataille_Navale;
 import Jeu.Extra.Son;
 
@@ -31,7 +30,7 @@ public class Parametres extends JFrame implements ActionListener {
     private final String[] statement = {null, "Horizontal", "Vertical"};
     private final String[] etat_reseau = {"Serveur", "Client"};
     private final JLabel nom_du_pion = new JLabel("Porte-Avion (5 Cases) : ");
-    private final JLabel Pseudo = new JLabel("Saisir son pseudo");
+    private final JLabel reseau = new JLabel("Saisir son mode de connexion : ");
     private final JLabel type = new JLabel("Type de bateau");
     private final JLabel type_de_X = new JLabel("Coordonnées :");
     private final JLabel type_de_Etat = new JLabel("Orientation");

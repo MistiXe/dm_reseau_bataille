@@ -1,6 +1,5 @@
 package Jeu;
 
-import Jeu.Connexion.Bateau;
 import Jeu.Extra.Son;
 import Jeu.Extra.Timer3min;
 

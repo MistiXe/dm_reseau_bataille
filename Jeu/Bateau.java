@@ -1,4 +1,4 @@
-package Jeu.Connexion;
+package Jeu;
 
 import java.util.ArrayList;
 

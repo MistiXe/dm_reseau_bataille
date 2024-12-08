@@ -1,0 +1,138 @@
+@startuml
+
+!theme plain
+top to bottom direction
+skinparam linetype ortho
+
+class Bateau {
+  + Bateau(): 
+  - coord: ArrayList<ArrayList<Integer>>
+  - etat: ArrayList<String>
+  + fromString(String): Bateau
+  + addState(String): void
+  + addCoordinate(ArrayList<ArrayList<Integer>>): void
+  + getStates(): ArrayList<String>
+  + toString(): String
+  + getCoordinates(): ArrayList<ArrayList<Integer>>
+}
+enum Etat_Pion << enumeration >> {
+  - Etat_Pion(): 
+  + HORIZONTAL: 
+  + VERTICAL: 
+  + valueOf(String): Etat_Pion
+  + values(): Etat_Pion[]
+}
+class Etats_bataille_Navale {
+  + Etats_bataille_Navale(): 
+}
+class Interface {
+  + Interface(): 
+  - button1: JButton
+  - lab_titre: JLabel
+  - gl: GridLayout
+  - img: Image
+  - gbl: GridBagConstraints
+  - s: Son
+  - button2: JButton
+  - size: int
+  - size2: int
+  + actionPerformed(ActionEvent): void
+}
+class Jeu {
+  + Jeu(Map<String, Bateau>, String, String): 
+  - points: int
+  - pseudo_i: JLabel
+  - monTour: boolean
+  - output: PrintWriter
+  - input: BufferedReader
+  - pan_south: JPanel
+  - dico_b: Map<String, Bateau>
+  - s: Son
+  - gridPanel: JPanel
+  - boutons: JButton[][]
+  - passe_tour: JLabel
+  - p: JLabel
+  - serveurSocket: ServerSocket
+  - socket: Socket
+  - envoyerDictionnaire(): void
+  + estdanslaGrille(ArrayList<Integer>): boolean
+  - verifierFinDeJeu(): void
+  - recevoirDictionnaire(): void
+  - setGrilleActive(boolean): void
+}
+class Launcher {
+  + Launcher(): 
+  + main(String[]): void
+}
+class Parametres {
+  + Parametres(int): 
+  - pan_main: JPanel
+  - gl_s: GridLayout
+  - LISTE_PION2: JComboBox<String>
+  - LISTE_PION3: JComboBox<String>
+  - liste_etat: ArrayList<Pion>
+  - liste_combo_etat: ArrayList<JComboBox>
+  - etat_reseau: String[]
+  - type_de_X: JLabel
+  - nom_du_pion3: JLabel
+  - type_de_Etat: JLabel
+  - LISTE_PION_AL4: JComboBox<String>
+  - SIZE: int
+  - liste_reseau: JComboBox<String>
+  - LISTE_PION_AL2: JComboBox<String>
+  - gl_settings: GridLayout
+  ~ dico_pion: Map<String, Bateau>
+  - bl: BorderLayout
+  - apercu: JPanel
+  - s: Son
+  - statement: String[]
+  - valider: JButton
+  - nom_du_pion4: JLabel
+  - LISTE_PION1: JComboBox<String>
+  - LISTE_PION4: JComboBox<String>
+  - LISTE_PION_AL1: JComboBox<String>
+  - confirmer: JButton
+  - LISTE_PION_AL3: JComboBox<String>
+  - type: JLabel
+  - main_panel: JPanel
+  ~ tableau_de_zero: ArrayList<ArrayList<Integer>>
+  - liste_combo: ArrayList<JComboBox>
+  - coordinates: ArrayList<ArrayList<Integer>>
+  - panel_sud: JPanel
+  - pseudo_saisie: JTextField
+  - nom_du_pion: JLabel
+  - Pseudo: JLabel
+  - nom_du_pion2: JLabel
+  + actionPerformed(ActionEvent): void
+  + estValide(Map<String, Bateau>): boolean
+  + generateCoordinates(): String[]
+  + generateIndex(ArrayList<Integer>, int, Pion): ArrayList<ArrayList<Integer>>
+  + testComboDescative(ArrayList<JComboBox>): boolean
+  + testComboDescativeEtat(ArrayList<JComboBox>): boolean
+}
+class Son {
+  + Son(String): 
+  - c: Clip
+  - audioIn: AudioInputStream
+  + play(): void
+  + close(): void
+  + stop(): void
+  + loop(): void
+  + setVolume(float): void
+  + isPlaying(): boolean
+}
+class Timer3min {
+  + Timer3min(JFrame): 
+  - timeRemaining: int
+  - timerLabel: JLabel
+  - timer: Timer
+  - TIMER_DURATION: int
+  - startTimer(JFrame): void
+  - formatTime(int): String
+}
+
+Interface             "1" *-[#595959,plain]-> "s\n1" Son                   
+Jeu                   "1" *-[#595959,plain]-> "s\n1" Son                   
+Parametres             -[#595959,dashed]->  Etats_bataille_Navale 
+Parametres            "1" *-[#595959,plain]-> "s\n1" Son                   
+@enduml
