@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/dm_reseau_bataille.iml" filepath="$PROJECT_DIR$/.idea/dm_reseau_bataille.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/dm_reseau_bataille_client.iml" filepath="$PROJECT_DIR$/.idea/dm_reseau_bataille_client.iml" />
     </modules>
   </component>
 </project>
