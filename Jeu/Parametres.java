@@ -163,6 +163,7 @@ public class Parametres extends JFrame implements ActionListener {
 
         if (e.getSource() == confirmer) {
             try {
+                this.dispose();
                 Jeu jeu = new Jeu(dico_pion, setEtatServeur());
             } catch (IOException ex) {
                 throw new RuntimeException(ex);

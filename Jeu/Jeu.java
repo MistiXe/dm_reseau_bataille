@@ -23,18 +23,18 @@ public class Jeu extends JFrame {
 
     private final JPanel gridPanel = new JPanel(new GridLayout(10, 10));
     private final JLabel pseudo_i = new JLabel();
+    private final JLabel passe_tour = new JLabel("Au tour de : ");
     private int points = 1;
     private final JPanel pan_south = new JPanel(new GridLayout(1, 3));
     private final JLabel p = new JLabel("Votre score est de " + points);
-    private final JLabel passe_tour = new JLabel("Au tour de : ");
 
     private boolean monTour = true;
     private ServerSocket serveurSocket;
-    private final Socket socket;
-    private final BufferedReader input;
-    private final PrintWriter output;
-    private final String pseudoLocal;
-    private final String pseudoAdversaire;
+    private Socket socket;
+    private BufferedReader input;
+    private PrintWriter output;
+    private String pseudoLocal; // Pseudo du joueur local
+    private String pseudoAdversaire; // Pseudo de l'adversaire
 
     public Jeu(Map<String, Bateau> liste_du_serveur, Etats_bataille_Navale.Etat reseau)
             throws IOException, UnsupportedAudioFileException, LineUnavailableException {
@@ -49,31 +49,36 @@ public class Jeu extends JFrame {
         pan_south.add(p);
         pan_south.add(passe_tour);
 
-
-        if(reseau.equals(Etats_bataille_Navale.Etat.SERVEUR)) {
+        // Initialisation des connexions (Serveur ou Client)
+        if (reseau.equals(Etats_bataille_Navale.Etat.SERVEUR)) {
             serveurSocket = new ServerSocket(12345);
-            socket = serveurSocket.accept();
-        }else{
+            socket = serveurSocket.accept();  // Attente de la connexion du client
+            input = new BufferedReader(new InputStreamReader(socket.getInputStream())); // Initialisation de input
+            output = new PrintWriter(socket.getOutputStream(), true); // Initialisation de output
+            pseudoLocal = JOptionPane.showInputDialog(this, "Entrez votre pseudo :");
+            pseudoAdversaire = input.readLine(); // Lecture du pseudo de l'adversaire
+            output.println(pseudoLocal); // Envoie du pseudo local
+        } else {
             String adresseIP = JOptionPane.showInputDialog(null,
                     "Entrez l'adresse IP du serveur :",
                     "Connexion au serveur",
                     JOptionPane.QUESTION_MESSAGE);
-            socket = new Socket(adresseIP, 12345);
+            socket = new Socket(adresseIP, 12345); // Connexion au serveur
+            input = new BufferedReader(new InputStreamReader(socket.getInputStream())); // Initialisation de input
+            output = new PrintWriter(socket.getOutputStream(), true); // Initialisation de output
+            pseudoLocal = JOptionPane.showInputDialog(this, "Entrez votre pseudo :");
+            output.println(pseudoLocal); // Envoie du pseudo local
+            pseudoAdversaire = input.readLine(); // Lecture du pseudo de l'adversaire
         }
-        input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-        output = new PrintWriter(socket.getOutputStream(), true);
 
-        pseudoLocal = JOptionPane.showInputDialog(this, "Entrez votre pseudo :");
-        pseudoAdversaire = input.readLine(); // Lire le pseudo de l'adversaire envoyé par le client
-
-        output.println(pseudoLocal); // Envoyer le pseudo local à l'adversaire
-
+        // Mise à jour des labels après la saisie des pseudos
         pseudo_i.setText("Joueur : " + pseudoLocal);
         updateLabelTour();
 
         envoyerDictionnaire();
         recevoirDictionnaire();
 
+        // Configuration des boutons de la grille
         for (int i = 0; i < 10; i++) {
             for (int j = 0; j < 10; j++) {
                 JButton bouton = new JButton();
@@ -88,6 +93,7 @@ public class Jeu extends JFrame {
                         return;
                     }
 
+                    // Mise à jour du clic sur un bouton
                     if (estdanslaGrille(ar)) {
                         bouton.setEnabled(false);
                         bouton.setBackground(Color.RED);
@@ -96,10 +102,13 @@ public class Jeu extends JFrame {
                         s.play();
                         output.println("TOUR");
                         monTour = false;
+
+                        // Mise à jour du label après avoir cliqué
                         updateLabelTour();
                         setGrilleActive(false);
                         points++;
                         p.setText("Votre score est de " + points);
+
                         try {
                             verifierFinDeJeu();
                         } catch (InterruptedException ex) {
@@ -110,6 +119,8 @@ public class Jeu extends JFrame {
                         bouton.setBackground(Color.DARK_GRAY);
                         output.println("TOUR");
                         monTour = false;
+
+                        // Mise à jour du label après avoir cliqué
                         updateLabelTour();
                         setGrilleActive(false);
                     }
@@ -122,6 +133,7 @@ public class Jeu extends JFrame {
         this.add(gridPanel, BorderLayout.CENTER);
         this.add(t, BorderLayout.NORTH);
 
+        // Thread pour gérer la communication réseau
         new Thread(() -> {
             try {
                 while (true) {
@@ -144,6 +156,7 @@ public class Jeu extends JFrame {
         this.setVisible(true);
     }
 
+    // Met à jour le label qui affiche le tour du joueur
     private void updateLabelTour() {
         if (monTour) {
             passe_tour.setText("Au tour de : " + pseudoLocal);
@@ -152,6 +165,7 @@ public class Jeu extends JFrame {
         }
     }
 
+    // Envoie le dictionnaire des bateaux à l'adversaire
     private void envoyerDictionnaire() {
         try {
             for (Map.Entry<String, Bateau> entry : dico_b.entrySet()) {
@@ -168,6 +182,7 @@ public class Jeu extends JFrame {
         }
     }
 
+    // Reçoit le dictionnaire des bateaux de l'adversaire
     private void recevoirDictionnaire() {
         try {
             dico_b.clear();
@@ -197,6 +212,7 @@ public class Jeu extends JFrame {
         }
     }
 
+    // Vérifie si un joueur a gagné
     private void verifierFinDeJeu() throws InterruptedException {
         if (points == 12) {
             JOptionPane.showMessageDialog(this, "Félicitations ! Vous avez gagné !", "Fin du jeu", JOptionPane.INFORMATION_MESSAGE);
@@ -213,6 +229,7 @@ public class Jeu extends JFrame {
         }
     }
 
+    // Active ou désactive la grille de boutons
     private void setGrilleActive(boolean active) {
         for (int i = 0; i < 10; i++) {
             for (int j = 0; j < 10; j++) {
@@ -221,6 +238,7 @@ public class Jeu extends JFrame {
         }
     }
 
+    // Vérifie si les coordonnées sont valides dans la grille
     public boolean estdanslaGrille(ArrayList<Integer> testeur) {
         for (Map.Entry<String, Bateau> map : dico_b.entrySet()) {
             if (map.getValue().getCoordinates().contains(testeur)) {
