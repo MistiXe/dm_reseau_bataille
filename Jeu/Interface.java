@@ -75,7 +75,7 @@ public class Interface extends JFrame implements ActionListener {
 
         // Gestion du son
 
-
+        s.loop("../dm_reseau_bataille/Jeu/Media/wano.wav");
 
 
 

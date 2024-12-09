@@ -54,7 +54,11 @@ public class Jeu extends JFrame {
             serveurSocket = new ServerSocket(12345);
             socket = serveurSocket.accept();
         }else{
-            socket = new Socket("", 12345);
+            String adresseIP = JOptionPane.showInputDialog(null,
+                    "Entrez l'adresse IP du serveur :",
+                    "Connexion au serveur",
+                    JOptionPane.QUESTION_MESSAGE);
+            socket = new Socket(adresseIP, 12345);
         }
         input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         output = new PrintWriter(socket.getOutputStream(), true);
