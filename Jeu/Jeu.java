@@ -21,11 +21,11 @@ public class Jeu extends JFrame {
     private Map<String, Bateau> dico_b = new HashMap<>();
     private final Son s = new Son("../dm_reseau_bataille/Jeu/Media/eau.wav");
 
-    private final JPanel gridPanel = new JPanel(new GridLayout(10, 10));
+    private final JPanel gridPanel = new JPanel(new GridLayout(11, 11)); // 11x11 pour inclure les en-têtes
     private final JLabel pseudo_i = new JLabel();
     private final JLabel passe_tour = new JLabel("Au tour de : ");
     private int points = 1;
-    private final JPanel pan_south = new JPanel(new GridLayout(1, 3));
+    private final JPanel pan_south = new JPanel(new GridLayout(1, 4));
     private final JLabel p = new JLabel("Votre score est de " + points);
 
     private boolean monTour = true;
@@ -40,7 +40,7 @@ public class Jeu extends JFrame {
             throws IOException, UnsupportedAudioFileException, LineUnavailableException {
         this.setTitle("Bataille Navale - " + reseau);
         this.dico_b = liste_du_serveur;
-        this.setSize(550, 500);
+        this.setSize(600, 600);  // Ajustement de la taille pour accueillir l'entête
         this.setDefaultCloseOperation(EXIT_ON_CLOSE);
         this.setLocationRelativeTo(null);
         Temps t = new Temps(this);
@@ -48,27 +48,28 @@ public class Jeu extends JFrame {
         pan_south.add(this.pseudo_i);
         pan_south.add(p);
         pan_south.add(passe_tour);
+        pan_south.add(t);
 
-        // Initialisation des connexions (Serveur ou Client)
+
         if (reseau.equals(Etats_bataille_Navale.Etat.SERVEUR)) {
             serveurSocket = new ServerSocket(12345);
-            socket = serveurSocket.accept();  // Attente de la connexion du client
-            input = new BufferedReader(new InputStreamReader(socket.getInputStream())); // Initialisation de input
+            socket = serveurSocket.accept();
+            input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             output = new PrintWriter(socket.getOutputStream(), true); // Initialisation de output
             pseudoLocal = JOptionPane.showInputDialog(this, "Entrez votre pseudo :");
-            pseudoAdversaire = input.readLine(); // Lecture du pseudo de l'adversaire
-            output.println(pseudoLocal); // Envoie du pseudo local
+            pseudoAdversaire = input.readLine();
+            output.println(pseudoLocal);
         } else {
             String adresseIP = JOptionPane.showInputDialog(null,
                     "Entrez l'adresse IP du serveur :",
                     "Connexion au serveur",
                     JOptionPane.QUESTION_MESSAGE);
-            socket = new Socket(adresseIP, 12345); // Connexion au serveur
-            input = new BufferedReader(new InputStreamReader(socket.getInputStream())); // Initialisation de input
-            output = new PrintWriter(socket.getOutputStream(), true); // Initialisation de output
+            socket = new Socket(adresseIP, 12345);
+            input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            output = new PrintWriter(socket.getOutputStream(), true);
             pseudoLocal = JOptionPane.showInputDialog(this, "Entrez votre pseudo :");
-            output.println(pseudoLocal); // Envoie du pseudo local
-            pseudoAdversaire = input.readLine(); // Lecture du pseudo de l'adversaire
+            output.println(pseudoLocal);
+            pseudoAdversaire = input.readLine();
         }
 
         // Mise à jour des labels après la saisie des pseudos
@@ -78,12 +79,21 @@ public class Jeu extends JFrame {
         envoyerDictionnaire();
         recevoirDictionnaire();
 
-        // Configuration des boutons de la grille
+
+        JPanel lettres_grille = new JPanel(new GridLayout(1, 11));
+        lettres_grille.add(new JLabel("")); // Coin supérieur gauche vide
+        for (char c = 'A'; c <= 'J'; c++) {
+            lettres_grille.add(new JLabel(String.valueOf(c), SwingConstants.CENTER));
+        }
+
+
         for (int i = 0; i < 10; i++) {
+            JPanel rowPanel = new JPanel(new GridLayout(1, 11));
+            rowPanel.add(new JLabel(String.valueOf(i), SwingConstants.CENTER));
             for (int j = 0; j < 10; j++) {
                 JButton bouton = new JButton();
                 boutons[i][j] = bouton;
-                bouton.setBackground(Color.CYAN);
+                bouton.setBackground(Color.BLUE);
                 ArrayList<Integer> ar = new ArrayList<>();
                 ar.add(i);
                 ar.add(j);
@@ -93,12 +103,13 @@ public class Jeu extends JFrame {
                         return;
                     }
 
-                    // Mise à jour du clic sur un bouton
+
                     if (estdanslaGrille(ar)) {
                         bouton.setEnabled(false);
                         bouton.setBackground(Color.RED);
                         bouton.setText("X");
                         bouton.setForeground(Color.WHITE);
+                        bouton.setFont(new Font("Arial", Font.BOLD, 30));  
                         s.play();
                         output.println("TOUR");
                         monTour = false;
@@ -126,14 +137,17 @@ public class Jeu extends JFrame {
                     }
                 });
 
-                gridPanel.add(bouton);
+                rowPanel.add(bouton);
             }
+            gridPanel.add(rowPanel);  // Ajout de chaque ligne à la grille
         }
 
-        this.add(gridPanel, BorderLayout.CENTER);
-        this.add(t, BorderLayout.NORTH);
 
-        // Thread pour gérer la communication réseau
+        this.add(lettres_grille, BorderLayout.NORTH);
+        this.add(gridPanel, BorderLayout.CENTER);
+
+
+
         new Thread(() -> {
             try {
                 while (true) {
@@ -233,7 +247,7 @@ public class Jeu extends JFrame {
     private void setGrilleActive(boolean active) {
         for (int i = 0; i < 10; i++) {
             for (int j = 0; j < 10; j++) {
-                boutons[i][j].setEnabled(active && boutons[i][j].getBackground() == Color.CYAN);
+                boutons[i][j].setEnabled(active && boutons[i][j].getBackground() == Color.BLUE);  // Seules les cases bleues sont activées
             }
         }
     }
