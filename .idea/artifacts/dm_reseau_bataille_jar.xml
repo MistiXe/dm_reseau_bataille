@@ -2,8 +2,10 @@
   <artifact type="jar" name="dm_reseau_bataille:jar">
     <output-path>$PROJECT_DIR$/out/artifacts/dm_reseau_bataille_jar</output-path>
     <root id="archive" name="dm_reseau_bataille.jar">
+      <element id="directory" name="META-INF">
+        <element id="file-copy" path="$PROJECT_DIR$/META-INF/MANIFEST.MF" />
+      </element>
       <element id="module-output" name="dm_reseau_bataille" />
-      <element id="artifact" artifact-name="Bataille Navale" />
     </root>
   </artifact>
 </component>

@@ -75,7 +75,7 @@ public class Bateau {
             for (Integer val : subList) {
                 sb.append(val).append(",");
             }
-            sb.deleteCharAt(sb.length() - 1); // Supprimer la dernière virgule
+            sb.deleteCharAt(sb.length() - 1); // Supprimer la d ernière virgule
             sb.append("];");
         }
 
