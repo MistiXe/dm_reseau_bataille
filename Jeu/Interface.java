@@ -14,7 +14,7 @@ public class Interface extends JFrame implements ActionListener {
 
 
     private Image img;
-    private Son s;
+    private Son s = new Son("../dm_reseau_bataille/Jeu/Media/wano.wav");
     private JLabel lab_titre = new JLabel("La bataille navale");
     private int size = 2;
     private int size2 = 1;
@@ -75,7 +75,7 @@ public class Interface extends JFrame implements ActionListener {
 
         // Gestion du son
 
-        s.loop("../dm_reseau_bataille/Jeu/Media/wano.wav");
+        s.loop();
 
 
 
@@ -96,7 +96,12 @@ public class Interface extends JFrame implements ActionListener {
 
 
                 this.dispose();
-                try {
+            try {
+                s.close();
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
+            try {
                     Parametres p = new Parametres(10);
                 } catch (Exception ex) {
                     throw new RuntimeException(ex);
