@@ -17,24 +17,24 @@ import java.util.Map;
 
 public class Jeu extends JFrame {
 
-    private JButton[][] boutons = new JButton[10][10];
+    private final JButton[][] boutons = new JButton[10][10];
     private Map<String, Bateau> dico_b = new HashMap<>();
-    private Son s = new Son("../dm_reseau_bataille/Jeu/Media/eau.wav");
+    private final Son s = new Son("../dm_reseau_bataille/Jeu/Media/eau.wav");
 
-    private JPanel gridPanel = new JPanel(new GridLayout(10, 10));
-    private JLabel pseudo_i = new JLabel();
+    private final JPanel gridPanel = new JPanel(new GridLayout(10, 10));
+    private final JLabel pseudo_i = new JLabel();
     private int points = 1;
-    private JPanel pan_south = new JPanel(new GridLayout(1, 3));
-    private JLabel p = new JLabel("Votre score est de " + points);
-    private JLabel passe_tour = new JLabel("Au tour de : ");
+    private final JPanel pan_south = new JPanel(new GridLayout(1, 3));
+    private final JLabel p = new JLabel("Votre score est de " + points);
+    private final JLabel passe_tour = new JLabel("Au tour de : ");
 
     private boolean monTour = true;
     private ServerSocket serveurSocket;
-    private Socket socket;
-    private BufferedReader input;
-    private PrintWriter output;
-    private String pseudoLocal;
-    private String pseudoAdversaire;
+    private final Socket socket;
+    private final BufferedReader input;
+    private final PrintWriter output;
+    private final String pseudoLocal;
+    private final String pseudoAdversaire;
 
     public Jeu(Map<String, Bateau> liste_du_serveur, Etats_bataille_Navale.Etat reseau)
             throws IOException, UnsupportedAudioFileException, LineUnavailableException {
@@ -160,7 +160,7 @@ public class Jeu extends JFrame {
                 for (ArrayList<Integer> coord : entry.getValue().getCoordinates()) {
                     bateauData.append(coord.get(0)).append(",").append(coord.get(1)).append(";");
                 }
-                output.println(bateauData.toString());
+                output.println(bateauData);
             }
             output.println("END");
         } catch (Exception e) {

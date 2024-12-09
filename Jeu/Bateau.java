@@ -5,7 +5,7 @@ import java.util.ArrayList;
 public class Bateau {
 
     private ArrayList<ArrayList<Integer>> coord;
-    private ArrayList<String> etat;
+    private final ArrayList<String> etat;
 
     public Bateau() {
         this.coord = new ArrayList<>();

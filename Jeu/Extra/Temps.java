@@ -9,7 +9,7 @@ public class Temps extends JPanel {
 
     private static final int TIMER_DURATION = 4 * 60; // Durée en secondes (3 minutes)
     private int timeRemaining = TIMER_DURATION;      // Temps restant en secondes
-    private JLabel timerLabel;
+    private final JLabel timerLabel;
     private Timer timer;
 
     public Temps(JFrame f) {

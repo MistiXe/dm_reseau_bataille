@@ -14,14 +14,14 @@ public class Interface extends JFrame implements ActionListener {
 
 
     private Image img;
-    private Son s = new Son("../dm_reseau_bataille/Jeu/Media/wano.wav");
-    private JLabel lab_titre = new JLabel("La bataille navale");
-    private int size = 2;
-    private int size2 = 1;
-    private GridLayout gl = new GridLayout(size, size2);
-    private GridBagConstraints gbl = new GridBagConstraints();
-    private JButton button1 = new JButton("Lancer une nouvelle partie");
-    private JButton button2 = new JButton("Règles du Jeu");
+    private final Son s = new Son("../dm_reseau_bataille/Jeu/Media/wano.wav");
+    private final JLabel lab_titre = new JLabel("La bataille navale");
+    private final int size = 2;
+    private final int size2 = 1;
+    private final GridLayout gl = new GridLayout(size, size2);
+    private final GridBagConstraints gbl = new GridBagConstraints();
+    private final JButton button1 = new JButton("Lancer une nouvelle partie");
+    private final JButton button2 = new JButton("Règles du Jeu");
 
 
     public Interface() throws IOException, UnsupportedAudioFileException, LineUnavailableException {

@@ -6,8 +6,8 @@ import java.io.IOException;
 
 public class Son {
 
-    private Clip c;
-    private  AudioInputStream audioIn;
+    private final Clip c;
+    private final AudioInputStream audioIn;
     public Son(String chemin_de_donnees) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
 
         File f = new File(chemin_de_donnees);
