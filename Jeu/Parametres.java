@@ -57,7 +57,7 @@ public class Parametres extends JFrame implements ActionListener {
     Map<String, Bateau> dico_pion = new HashMap<>();
     private ArrayList<ArrayList<Integer>> coordinates;
     private JPanel apercu;
-    private final Son s;
+   
 
 
     public Parametres(int taille) throws UnsupportedAudioFileException, LineUnavailableException, IOException {
@@ -68,8 +68,7 @@ public class Parametres extends JFrame implements ActionListener {
         this.setTitle("Paramètres");
         this.setLocationRelativeTo(null);
         this.setContentPane(pan_main);
-        s = new Son("../dm_reseau_bataille/Jeu/Media/draft.wav");
-        s.loop();
+     
         pan_main.setLayout(bl);
         pan_main.add(main_panel, BorderLayout.CENTER);
         pan_main.add(panel_sud, BorderLayout.SOUTH);
@@ -278,11 +277,9 @@ public class Parametres extends JFrame implements ActionListener {
             apercu.setPreferredSize(new Dimension(150, 215));
             pan_main.add(apercu, BorderLayout.EAST);
             if (estValide(dico_pion)) {
-                try {
-                    s.close();
-                } catch (IOException ex) {
-                    throw new RuntimeException(ex);
-                }
+                
+
+               
                 panel_sud.removeAll();
                 panel_sud.add(confirmer);
                 panel_sud.revalidate();
@@ -292,7 +289,7 @@ public class Parametres extends JFrame implements ActionListener {
                 JOptionPane.showMessageDialog(null, "Erreur dans la saisie de données , veuillez réessayer. ", "Erreur", JOptionPane.ERROR_MESSAGE);
                 this.dispose();
                 try {
-                    s.close();
+                   
                     new Parametres(10);
                 } catch (UnsupportedAudioFileException ex) {
                     throw new RuntimeException(ex);
