@@ -166,7 +166,18 @@ public class Parametres extends JFrame implements ActionListener {
                 this.dispose();
                 Jeu jeu = new Jeu(dico_pion, setEtatServeur());
             } catch (IOException ex) {
-                throw new RuntimeException(ex);
+                this.dispose();
+                JOptionPane.showMessageDialog(null,"Connexion non effectuée, vous allez être redirigé vers l'écran d'accueil ", "Connexion errreur", JOptionPane.ERROR_MESSAGE);
+                try {
+                    Interface menu = new Interface();
+                } catch (IOException exc) {
+                    throw new RuntimeException(exc);
+                } catch (UnsupportedAudioFileException exc) {
+                    throw new RuntimeException(exc);
+                } catch (LineUnavailableException exc) {
+                    throw new RuntimeException(exc);
+                }
+
             } catch (UnsupportedAudioFileException ex) {
                 throw new RuntimeException(ex);
             } catch (LineUnavailableException ex) {

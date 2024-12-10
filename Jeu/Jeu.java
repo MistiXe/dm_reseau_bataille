@@ -20,6 +20,7 @@ public class Jeu extends JFrame {
     private final JButton[][] boutons = new JButton[10][10];
     private Map<String, Bateau> dico_b = new HashMap<>();
     private final Son s = new Son("../dm_reseau_bataille/Jeu/Media/eau.wav");
+    private final Son s2 = new Son("../dm_reseau_bataille/Jeu/Media/themepartie.wav");
 
     private final JPanel gridPanel = new JPanel(new GridLayout(11, 11)); // 11x11 pour inclure les en-têtes
     private final JLabel pseudo_i = new JLabel();
@@ -35,6 +36,7 @@ public class Jeu extends JFrame {
     private PrintWriter output;
     private String pseudoLocal; // Pseudo du joueur local
     private String pseudoAdversaire; // Pseudo de l'adversaire
+    Son down  =  new Son("../dm_reseau_bataille/Jeu/Media/coultdown.wav");
 
     public Jeu(Map<String, Bateau> liste_du_serveur, Etats_bataille_Navale.Etat reseau)
             throws IOException, UnsupportedAudioFileException, LineUnavailableException {
@@ -43,12 +45,12 @@ public class Jeu extends JFrame {
         this.setSize(600, 600);  // Ajustement de la taille pour accueillir l'entête
         this.setDefaultCloseOperation(EXIT_ON_CLOSE);
         this.setLocationRelativeTo(null);
-        Temps t = new Temps(this);
+
         this.add(pan_south, BorderLayout.SOUTH);
         pan_south.add(this.pseudo_i);
         pan_south.add(p);
         pan_south.add(passe_tour);
-        pan_south.add(t);
+
 
 
         if (reseau.equals(Etats_bataille_Navale.Etat.SERVEUR)) {
@@ -71,7 +73,9 @@ public class Jeu extends JFrame {
             output.println(pseudoLocal);
             pseudoAdversaire = input.readLine();
         }
-
+        s2.loop();
+        Temps t = new Temps(this, s2, down);
+        pan_south.add(t);
         // Mise à jour des labels après la saisie des pseudos
         pseudo_i.setText("Joueur : " + pseudoLocal);
         updateLabelTour();
@@ -104,12 +108,13 @@ public class Jeu extends JFrame {
                     }
 
 
+
                     if (estdanslaGrille(ar)) {
                         bouton.setEnabled(false);
                         bouton.setBackground(Color.RED);
                         bouton.setText("X");
                         bouton.setForeground(Color.WHITE);
-                        bouton.setFont(new Font("Arial", Font.BOLD, 30));  
+                        bouton.setFont(new Font("Arial", Font.BOLD, 25));
                         s.play();
                         output.println("TOUR");
                         monTour = false;
@@ -166,6 +171,7 @@ public class Jeu extends JFrame {
                 e.printStackTrace();
             }
         }).start();
+
 
         this.setVisible(true);
     }
@@ -261,4 +267,6 @@ public class Jeu extends JFrame {
         }
         return false;
     }
+
+
 }
